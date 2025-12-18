@@ -5,43 +5,26 @@ import java.time.LocalDateTime;
 
 @Entity
 public class SeatingPlan {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private ExamSession examSession;
-
-    @ManyToOne
-    private ExamRoom room;
-
-    @Column(columnDefinition = "TEXT")
-    private String arrangementJson;
+    private String name;
 
     private LocalDateTime generatedAt;
 
+    // Automatically set timestamp before insert
     @PrePersist
     public void setGeneratedAt() {
         this.generatedAt = LocalDateTime.now();
     }
 
+    // Getters and setters
     public Long getId() { return id; }
-    public void setExamSession(ExamSession examSession) {
-    this.examSession = examSession;
-}
+    public void setId(Long id) { this.id = id; }
 
-public void setRoom(ExamRoom room) {
-    this.room = room;
-}
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-public void setArrangementJson(String arrangementJson) {
-    this.arrangementJson = arrangementJson;
-}
-
-@PrePersist
-public void setGeneratedAt() {
-    this.generatedAt = LocalDateTime.now();
-}
-
+    public LocalDateTime getGeneratedAt() { return generatedAt; }
 }
