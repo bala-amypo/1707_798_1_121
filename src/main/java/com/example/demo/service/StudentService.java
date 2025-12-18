@@ -4,6 +4,6 @@ import com.example.demo.model.Student;
 import java.util.List;
 
 public interface StudentService {
-    Student saveStudent(Student student);
+    Student addStudent(Student student);
     List<Student> getAllStudents();
 }
