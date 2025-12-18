@@ -2,12 +2,12 @@ package com.example.demo.controller;
 
 import com.example.demo.model.ExamSession;
 import com.example.demo.service.ExamSessionService;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/sessions")
+@RequestMapping("/exam-session")
 public class ExamSessionController {
 
     @Autowired
@@ -15,7 +15,7 @@ public class ExamSessionController {
 
     @PostMapping("/add")
     public ExamSession addSession(@RequestBody ExamSession session) {
-        return examSessionService.addSession(session);
+        return examSessionService.saveSession(session);
     }
 
     @GetMapping("/all")
