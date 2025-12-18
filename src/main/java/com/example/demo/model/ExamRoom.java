@@ -3,6 +3,7 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "exam_rooms")
 public class ExamRoom {
 
     @Id
@@ -12,9 +13,9 @@ public class ExamRoom {
     @Column(unique = true)
     private String roomNumber;
 
-    private Integer capacity;
     private Integer rows;
     private Integer columns;
+    private Integer capacity;
 
     @PrePersist
     @PreUpdate
@@ -22,5 +23,15 @@ public class ExamRoom {
         this.capacity = rows * columns;
     }
 
-    // getters & setters
+    public Long getId() { return id; }
+    public String getRoomNumber() { return roomNumber; }
+    public void setRoomNumber(String roomNumber) { this.roomNumber = roomNumber; }
+
+    public Integer getRows() { return rows; }
+    public void setRows(Integer rows) { this.rows = rows; }
+
+    public Integer getColumns() { return columns; }
+    public void setColumns(Integer columns) { this.columns = columns; }
+
+    public Integer getCapacity() { return capacity; }
 }

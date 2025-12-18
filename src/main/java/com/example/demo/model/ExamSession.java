@@ -18,5 +18,7 @@ public class ExamSession {
     @ManyToMany
     private List<Student> students;
 
-    // getters & setters
+    public Long getId() { return id; }
+    public LocalDate getExamDate() { return examDate; }
+    public List<Student> getStudents() { return students; }
 }

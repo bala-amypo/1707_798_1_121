@@ -22,9 +22,9 @@ public class SeatingPlan {
     private LocalDateTime generatedAt;
 
     @PrePersist
-    public void onCreate() {
+    public void setGeneratedAt() {
         this.generatedAt = LocalDateTime.now();
     }
 
-    // getters & setters
+    public Long getId() { return id; }
 }
