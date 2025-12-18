@@ -27,4 +27,21 @@ public class SeatingPlan {
     }
 
     public Long getId() { return id; }
+    public void setExamSession(ExamSession examSession) {
+    this.examSession = examSession;
+}
+
+public void setRoom(ExamRoom room) {
+    this.room = room;
+}
+
+public void setArrangementJson(String arrangementJson) {
+    this.arrangementJson = arrangementJson;
+}
+
+@PrePersist
+public void setGeneratedAt() {
+    this.generatedAt = LocalDateTime.now();
+}
+
 }
