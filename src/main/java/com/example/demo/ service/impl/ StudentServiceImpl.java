@@ -1,34 +1,41 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.model.User;
-import com.example.demo.repository.UserRepository;
-import com.example.demo.service.UserService;
+import com.example.demo.exception.ApiException;
+import com.example.demo.model.Student;
+import com.example.demo.repository.StudentRepository;
+import com.example.demo.service.StudentService;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-@Service
-public class UserServiceImpl implements UserService {
+import java.util.List;
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+@Service
+public class StudentServiceImpl implements StudentService {
+
+    private final StudentRepository studentRepository;
 
     // REQUIRED constructor order
-    public UserServiceImpl(UserRepository userRepository,
-                           PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+    public StudentServiceImpl(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
     }
 
     @Override
-    public User register(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+    public Student addStudent(Student student) {
+
+        if (student.getYear() < 1 || student.getYear() > 5) {
+            throw new ApiException("Invalid year");
+        }
+
+        studentRepository.findByRollNumber(student.getRollNumber())
+                .ifPresent(s -> {
+                    throw new ApiException("roll number exists");
+                });
+
+        return studentRepository.save(student);
     }
 
     @Override
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("user not found"));
+    public List<Student> getAllStudents() {
+        return studentRepository.findAll();
     }
 }
