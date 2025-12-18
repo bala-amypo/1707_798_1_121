@@ -20,7 +20,7 @@ public class AuthController {
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
-        return userService.register(user); // ✅ pass User object
+        return userService.register(user);
     }
 
     @PostMapping("/login")
