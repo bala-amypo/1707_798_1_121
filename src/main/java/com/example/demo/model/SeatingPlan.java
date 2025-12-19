@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "seating_plans")
 public class SeatingPlan {
 
     @Id
@@ -12,22 +11,20 @@ public class SeatingPlan {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "exam_session_id")
     private ExamSession examSession;
 
     @ManyToOne
-    private ExamRoom room;
+    @JoinColumn(name = "exam_room_id")
+    private ExamRoom examRoom;
 
+    @Lob
     @Column(columnDefinition = "TEXT")
-    private String arrangementJson;
+    private String seatAllocation;
 
     private LocalDateTime generatedAt;
 
-    public SeatingPlan() {}
-
-    @PrePersist
-    public void setGeneratedAt() {
-        this.generatedAt = LocalDateTime.now();
-    }
+    /* ================== GETTERS & SETTERS ================== */
 
     public Long getId() {
         return id;
@@ -41,23 +38,32 @@ public class SeatingPlan {
         this.examSession = examSession;
     }
 
-    public ExamRoom getRoom() {
-        return room;
+    public ExamRoom getExamRoom() {
+        return examRoom;
     }
 
-    public void setRoom(ExamRoom room) {
-        this.room = room;
+    public void setExamRoom(ExamRoom examRoom) {
+        this.examRoom = examRoom;
     }
 
-    public String getArrangementJson() {
-        return arrangementJson;
+    public String getSeatAllocation() {
+        return seatAllocation;
     }
 
-    public void setArrangementJson(String arrangementJson) {
-        this.arrangementJson = arrangementJson;
+    public void setSeatAllocation(String seatAllocation) {
+        this.seatAllocation = seatAllocation;
     }
 
     public LocalDateTime getGeneratedAt() {
         return generatedAt;
+    }
+
+    public void setGeneratedAt(LocalDateTime generatedAt) {
+        this.generatedAt = generatedAt;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.generatedAt = LocalDateTime.now();
     }
 }
