@@ -3,27 +3,45 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "exam_rooms")
+@Table(
+    name = "exam_rooms",
+    uniqueConstraints = @UniqueConstraint(columnNames = "roomNumber")
+)
 public class ExamRoom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String roomNumber;
 
     private Integer rows;
     private Integer columns;
     private Integer capacity;
 
-    @PrePersist
-    @PreUpdate
-    public void ensureCapacityMatches() {
+    // ---------- Constructors ----------
+    public ExamRoom() {}
+
+    public ExamRoom(String roomNumber, Integer rows, Integer columns) {
+        this.roomNumber = roomNumber;
+        this.rows = rows;
+        this.columns = columns;
         this.capacity = rows * columns;
     }
 
+    // ---------- Auto capacity ----------
+    @PrePersist
+    @PreUpdate
+    public void calculateCapacity() {
+        if (rows != null && columns != null) {
+            this.capacity = rows * columns;
+        }
+    }
+
+    // ---------- Getters & Setters ----------
     public Long getId() { return id; }
+
     public String getRoomNumber() { return roomNumber; }
     public void setRoomNumber(String roomNumber) { this.roomNumber = roomNumber; }
 

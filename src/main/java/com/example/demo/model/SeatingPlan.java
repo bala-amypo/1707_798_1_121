@@ -4,44 +4,53 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "seating_plans")
 public class SeatingPlan {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-
     @ManyToOne
+    @JoinColumn(name = "exam_session_id", nullable = false)
     private ExamSession examSession;
 
     @ManyToOne
-    private ExamRoom room;
+    @JoinColumn(name = "exam_room_id", nullable = false)
+    private ExamRoom examRoom;
 
-    @Column(columnDefinition = "TEXT")
-    private String arrangementJson;
+    @Lob
+    @Column(nullable = false)
+    private String seatAllocation;
 
     private LocalDateTime generatedAt;
 
+    // ---------- Constructors ----------
+    public SeatingPlan() {}
+
+    public SeatingPlan(ExamSession examSession, ExamRoom examRoom, String seatAllocation) {
+        this.examSession = examSession;
+        this.examRoom = examRoom;
+        this.seatAllocation = seatAllocation;
+    }
+
+    // ---------- Auto timestamp ----------
     @PrePersist
     public void setGeneratedAt() {
         this.generatedAt = LocalDateTime.now();
     }
 
-    // Getters and setters
+    // ---------- Getters & Setters ----------
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
 
     public ExamSession getExamSession() { return examSession; }
     public void setExamSession(ExamSession examSession) { this.examSession = examSession; }
 
-    public ExamRoom getRoom() { return room; }
-    public void setRoom(ExamRoom room) { this.room = room; }
+    public ExamRoom getExamRoom() { return examRoom; }
+    public void setExamRoom(ExamRoom examRoom) { this.examRoom = examRoom; }
 
-    public String getArrangementJson() { return arrangementJson; }
-    public void setArrangementJson(String arrangementJson) { this.arrangementJson = arrangementJson; }
+    public String getSeatAllocation() { return seatAllocation; }
+    public void setSeatAllocation(String seatAllocation) { this.seatAllocation = seatAllocation; }
 
     public LocalDateTime getGeneratedAt() { return generatedAt; }
 }
