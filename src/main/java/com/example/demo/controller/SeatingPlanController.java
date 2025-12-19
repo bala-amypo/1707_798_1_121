@@ -23,12 +23,12 @@ public class SeatingPlanController {
     }
 
     @GetMapping("/{id}")
-    public SeatingPlan get(@PathVariable Long id) {
+    public SeatingPlan getPlan(@PathVariable Long id) {
         return seatingPlanService.getPlanById(id);
     }
 
     @GetMapping("/session/{sessionId}")
-    public List<SeatingPlan> bySession(@PathVariable Long sessionId) {
+    public List<SeatingPlan> getBySession(@PathVariable Long sessionId) {
         return seatingPlanService.getPlansBySession(sessionId);
     }
 

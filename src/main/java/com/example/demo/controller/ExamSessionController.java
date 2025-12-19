@@ -24,14 +24,14 @@ public class ExamSessionController {
         return examSessionService.createSession(session);
     }
 
-    @GetMapping("/{id}")
-    public ExamSession get(@PathVariable Long id) {
-        return examSessionService.getSessionById(id);
-    }
-
     @GetMapping
     public List<ExamSession> getAll() {
         return examSessionService.getAllSessions();
+    }
+
+    @GetMapping("/{id}")
+    public ExamSession get(@PathVariable Long id) {
+        return examSessionService.getSessionById(id);
     }
 
     @PostMapping("/{sessionId}/students/{studentId}")

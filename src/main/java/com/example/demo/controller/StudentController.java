@@ -22,14 +22,14 @@ public class StudentController {
         return studentService.addStudent(student);
     }
 
-    @GetMapping("/{id}")
-    public Student getStudent(@PathVariable Long id) {
-        return studentService.getStudentById(id);
-    }
-
     @GetMapping
     public List<Student> getAllStudents() {
         return studentService.getAllStudents();
+    }
+
+    @GetMapping("/{id}")
+    public Student getStudent(@PathVariable Long id) {
+        return studentService.getStudentById(id);
     }
 
     @PutMapping("/{id}")

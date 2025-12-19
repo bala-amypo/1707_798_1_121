@@ -22,14 +22,14 @@ public class ExamRoomController {
         return examRoomService.addRoom(room);
     }
 
-    @GetMapping("/{id}")
-    public ExamRoom getRoom(@PathVariable Long id) {
-        return examRoomService.getRoomById(id);
-    }
-
     @GetMapping
     public List<ExamRoom> getAllRooms() {
         return examRoomService.getAllRooms();
+    }
+
+    @GetMapping("/{id}")
+    public ExamRoom getRoom(@PathVariable Long id) {
+        return examRoomService.getRoomById(id);
     }
 
     @GetMapping("/{roomId}/available-seats")
