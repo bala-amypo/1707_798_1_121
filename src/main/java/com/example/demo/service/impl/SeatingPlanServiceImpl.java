@@ -22,7 +22,7 @@ public class SeatingPlanServiceImpl implements SeatingPlanService {
     private final SeatingPlanRepository seatingPlanRepository;
     private final ExamSessionRepository examSessionRepository;
     private final ExamRoomRepository examRoomRepository;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public SeatingPlanServiceImpl(
             SeatingPlanRepository seatingPlanRepository,
@@ -34,18 +34,20 @@ public class SeatingPlanServiceImpl implements SeatingPlanService {
     }
 
     @Override
-    public SeatingPlan generatePlan(Long examSessionId, Long roomId, String arrangementJson) {
+    public SeatingPlan generateSeatingPlan(Long sessionId) {
 
-        ExamSession session = examSessionRepository.findById(examSessionId)
+        ExamSession session = examSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new ApiException("Exam session not found"));
 
-        ExamRoom room = examRoomRepository.findById(roomId)
-                .orElseThrow(() -> new ApiException("Exam room not found"));
+        ExamRoom room = examRoomRepository.findAll()
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new ApiException("No exam room available"));
 
         SeatingPlan plan = new SeatingPlan();
         plan.setExamSession(session);
         plan.setExamRoom(room);
-        plan.setSeatAllocation(arrangementJson);
+        plan.setSeatAllocation("{}"); // default empty JSON
 
         return seatingPlanRepository.save(plan);
     }
@@ -67,21 +69,21 @@ public class SeatingPlanServiceImpl implements SeatingPlanService {
         SeatingPlan plan = getPlanById(planId);
 
         try {
-            Map<String, String> allocation =
-                    objectMapper.readValue(
+            Map<String, String> map =
+                    mapper.readValue(
                             plan.getSeatAllocation(),
                             new TypeReference<Map<String, String>>() {});
 
-            String seat = allocation.get(rollNumber);
+            String seat = map.get(rollNumber);
 
             if (seat == null) {
-                throw new ApiException("Seat not found for roll number");
+                throw new ApiException("Seat not found");
             }
 
             return seat;
 
         } catch (Exception e) {
-            throw new ApiException("Invalid seating plan data");
+            throw new ApiException("Invalid seating data");
         }
     }
 }
