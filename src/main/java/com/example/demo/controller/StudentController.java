@@ -1,25 +1,45 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Student;
-import com.example.demo.service.StudentService;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
+import org.springframework.web.bind.annotation.*;
+
+import com.example.demo.model.Student;
+import com.example.demo.service.StudentService;
+
 @RestController
-@RequestMapping("/students")
+@RequestMapping("/api/students")
 public class StudentController {
 
-    @Autowired
-    private StudentService studentService;
+    private final StudentService studentService;
 
-    @PostMapping("/add")
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
+    }
+
+    @PostMapping
     public Student addStudent(@RequestBody Student student) {
         return studentService.addStudent(student);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/{id}")
+    public Student getStudent(@PathVariable Long id) {
+        return studentService.getStudentById(id);
+    }
+
+    @GetMapping
     public List<Student> getAllStudents() {
         return studentService.getAllStudents();
+    }
+
+    @PutMapping("/{id}")
+    public Student updateStudent(@PathVariable Long id,
+                                 @RequestBody Student student) {
+        return studentService.updateStudent(id, student);
+    }
+
+    @GetMapping("/lookup/{rollNumber}")
+    public Student getByRoll(@PathVariable String rollNumber) {
+        return studentService.getStudentByRollNumber(rollNumber);
     }
 }

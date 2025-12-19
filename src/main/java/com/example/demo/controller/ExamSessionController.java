@@ -1,25 +1,47 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.ExamSession;
-import com.example.demo.service.ExamSessionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Set;
+
+import org.springframework.web.bind.annotation.*;
+
+import com.example.demo.model.ExamSession;
+import com.example.demo.model.Student;
+import com.example.demo.service.ExamSessionService;
 
 @RestController
-@RequestMapping("/exam-session")
+@RequestMapping("/api/sessions")
 public class ExamSessionController {
 
-    @Autowired
-    private ExamSessionService examSessionService;
+    private final ExamSessionService examSessionService;
 
-    @PostMapping("/add")
-    public ExamSession addSession(@RequestBody ExamSession session) {
-        return examSessionService.saveSession(session);
+    public ExamSessionController(ExamSessionService examSessionService) {
+        this.examSessionService = examSessionService;
     }
 
-    @GetMapping("/all")
-    public List<ExamSession> getAllSessions() {
+    @PostMapping
+    public ExamSession create(@RequestBody ExamSession session) {
+        return examSessionService.createSession(session);
+    }
+
+    @GetMapping("/{id}")
+    public ExamSession get(@PathVariable Long id) {
+        return examSessionService.getSessionById(id);
+    }
+
+    @GetMapping
+    public List<ExamSession> getAll() {
         return examSessionService.getAllSessions();
+    }
+
+    @PostMapping("/{sessionId}/students/{studentId}")
+    public ExamSession addStudent(@PathVariable Long sessionId,
+                                  @PathVariable Long studentId) {
+        return examSessionService.addStudentToSession(sessionId, studentId);
+    }
+
+    @GetMapping("/{sessionId}/students")
+    public Set<Student> getStudents(@PathVariable Long sessionId) {
+        return examSessionService.getStudentsForSession(sessionId);
     }
 }
