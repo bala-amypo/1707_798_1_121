@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,8 @@ import com.example.demo.repository.ExamRoomRepository;
 import com.example.demo.repository.ExamSessionRepository;
 import com.example.demo.repository.SeatingPlanRepository;
 import com.example.demo.service.SeatingPlanService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class SeatingPlanServiceImpl implements SeatingPlanService {
@@ -19,6 +22,7 @@ public class SeatingPlanServiceImpl implements SeatingPlanService {
     private final SeatingPlanRepository seatingPlanRepository;
     private final ExamSessionRepository examSessionRepository;
     private final ExamRoomRepository examRoomRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public SeatingPlanServiceImpl(
             SeatingPlanRepository seatingPlanRepository,
@@ -43,8 +47,8 @@ public class SeatingPlanServiceImpl implements SeatingPlanService {
         plan.setRoom(room);
         plan.setArrangementJson(arrangementJson);
 
-        // ❌ DO NOT call setGeneratedAt(LocalDateTime)
-        // ✔ @PrePersist in entity will handle it
+        // ❌ DO NOT set generatedAt manually
+        // ✔ @PrePersist handles it
 
         return seatingPlanRepository.save(plan);
     }
@@ -52,10 +56,31 @@ public class SeatingPlanServiceImpl implements SeatingPlanService {
     @Override
     public SeatingPlan getPlanByExamSessionId(Long examSessionId) {
 
-        Optional<SeatingPlan> plan =
+        List<SeatingPlan> plans =
                 seatingPlanRepository.findByExamSessionId(examSessionId);
 
-        return plan.orElseThrow(() ->
-                new ApiException("Seating plan not found"));
+        if (plans == null || plans.isEmpty()) {
+            throw new ApiException("Seating plan not found");
+        }
+
+        return plans.get(0);
+    }
+
+    @Override
+    public String getSeatByRollNumber(Long examSessionId, String rollNumber) {
+
+        SeatingPlan plan = getPlanByExamSessionId(examSessionId);
+
+        try {
+            Map<String, String> seatingMap =
+                    objectMapper.readValue(
+                            plan.getArrangementJson(),
+                            new TypeReference<Map<String, String>>() {});
+
+            return seatingMap.get(rollNumber);
+
+        } catch (Exception e) {
+            throw new ApiException("Error parsing seating arrangement");
+        }
     }
 }
