@@ -52,4 +52,12 @@ public class ExamRoom {
     public void setColumns(Integer columns) { this.columns = columns; }
 
     public Integer getCapacity() { return capacity; }
+    public void ensureCapacityMatches() {
+    if (rows == null || columns == null || rows <= 0 || columns <= 0) {
+        throw new IllegalArgumentException("Invalid rows or columns");
+    }
+    this.capacity = rows * columns;
+    }
+
+
 }

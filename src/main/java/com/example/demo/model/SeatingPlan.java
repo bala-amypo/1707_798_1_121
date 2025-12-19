@@ -12,45 +12,52 @@ public class SeatingPlan {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "exam_session_id", nullable = false)
     private ExamSession examSession;
 
     @ManyToOne
-    @JoinColumn(name = "exam_room_id", nullable = false)
-    private ExamRoom examRoom;
+    private ExamRoom room;
 
-    @Lob
-    @Column(nullable = false)
-    private String seatAllocation;
+    @Column(columnDefinition = "TEXT")
+    private String arrangementJson;
 
     private LocalDateTime generatedAt;
 
-    // ---------- Constructors ----------
     public SeatingPlan() {}
 
-    public SeatingPlan(ExamSession examSession, ExamRoom examRoom, String seatAllocation) {
-        this.examSession = examSession;
-        this.examRoom = examRoom;
-        this.seatAllocation = seatAllocation;
-    }
-
-    // ---------- Auto timestamp ----------
     @PrePersist
     public void setGeneratedAt() {
         this.generatedAt = LocalDateTime.now();
     }
 
-    // ---------- Getters & Setters ----------
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public ExamSession getExamSession() { return examSession; }
-    public void setExamSession(ExamSession examSession) { this.examSession = examSession; }
+    public ExamSession getExamSession() {
+        return examSession;
+    }
 
-    public ExamRoom getExamRoom() { return examRoom; }
-    public void setExamRoom(ExamRoom examRoom) { this.examRoom = examRoom; }
+    public void setExamSession(ExamSession examSession) {
+        this.examSession = examSession;
+    }
 
-    public String getSeatAllocation() { return seatAllocation; }
-    public void setSeatAllocation(String seatAllocation) { this.seatAllocation = seatAllocation; }
+    public ExamRoom getRoom() {
+        return room;
+    }
 
-    public LocalDateTime getGeneratedAt() { return generatedAt; }
+    public void setRoom(ExamRoom room) {
+        this.room = room;
+    }
+
+    public String getArrangementJson() {
+        return arrangementJson;
+    }
+
+    public void setArrangementJson(String arrangementJson) {
+        this.arrangementJson = arrangementJson;
+    }
+
+    public LocalDateTime getGeneratedAt() {
+        return generatedAt;
+    }
 }
