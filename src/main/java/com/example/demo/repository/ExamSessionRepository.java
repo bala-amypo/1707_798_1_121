@@ -1,6 +1,12 @@
 package com.example.demo.repository;
 
-import com.example.demo.model.ExamSession;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ExamSessionRepository extends JpaRepository<ExamSession, Long> {}
+import com.example.demo.model.ExamSession;
+
+public interface ExamSessionRepository extends JpaRepository<ExamSession, Long> {
+
+    Optional<ExamSession> findByCourseCode(String courseCode);
+}
