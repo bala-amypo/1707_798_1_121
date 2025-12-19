@@ -1,7 +1,6 @@
 package com.example.demo.service.impl;
 
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -9,101 +8,54 @@ import com.example.demo.exception.ApiException;
 import com.example.demo.model.ExamRoom;
 import com.example.demo.model.ExamSession;
 import com.example.demo.model.SeatingPlan;
-import com.example.demo.model.Student;
 import com.example.demo.repository.ExamRoomRepository;
 import com.example.demo.repository.ExamSessionRepository;
 import com.example.demo.repository.SeatingPlanRepository;
 import com.example.demo.service.SeatingPlanService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class SeatingPlanServiceImpl implements SeatingPlanService {
 
-    private final ExamSessionRepository examSessionRepository;
     private final SeatingPlanRepository seatingPlanRepository;
+    private final ExamSessionRepository examSessionRepository;
     private final ExamRoomRepository examRoomRepository;
 
-    public SeatingPlanServiceImpl(ExamSessionRepository examSessionRepository,
-                                  SeatingPlanRepository seatingPlanRepository,
-                                  ExamRoomRepository examRoomRepository) {
-        this.examSessionRepository = examSessionRepository;
+    public SeatingPlanServiceImpl(
+            SeatingPlanRepository seatingPlanRepository,
+            ExamSessionRepository examSessionRepository,
+            ExamRoomRepository examRoomRepository) {
         this.seatingPlanRepository = seatingPlanRepository;
+        this.examSessionRepository = examSessionRepository;
         this.examRoomRepository = examRoomRepository;
     }
 
     @Override
-    public SeatingPlan generateSeatingPlan(Long examSessionId) {
+    public SeatingPlan generatePlan(Long examSessionId, Long roomId, String arrangementJson) {
 
         ExamSession session = examSessionRepository.findById(examSessionId)
-                .orElseThrow(() ->
-                        new ApiException("session not found"));
+                .orElseThrow(() -> new ApiException("Exam session not found"));
 
-        int studentCount = session.getStudents().size();
+        ExamRoom room = examRoomRepository.findById(roomId)
+                .orElseThrow(() -> new ApiException("Exam room not found"));
 
-        List<ExamRoom> rooms =
-                examRoomRepository.findByCapacityGreaterThanEqual(studentCount);
+        SeatingPlan plan = new SeatingPlan();
+        plan.setExamSession(session);
+        plan.setRoom(room);
+        plan.setArrangementJson(arrangementJson);
 
-        if (rooms.isEmpty()) {
-            throw new ApiException("no room available");
-        }
+        // ❌ DO NOT call setGeneratedAt(LocalDateTime)
+        // ✔ @PrePersist in entity will handle it
 
-        ExamRoom room = rooms.get(0);
-
-        Map<String, String> allocation = new LinkedHashMap<>();
-        int seat = 1;
-
-        for (Student s : session.getStudents()) {
-            allocation.put("Seat-" + seat++, s.getRollNumber());
-        }
-
-        try {
-            String json =
-                    new ObjectMapper().writeValueAsString(allocation);
-
-            SeatingPlan plan = new SeatingPlan();
-            plan.setExamSession(session);
-            plan.setRoom(room);
-            plan.setArrangementJson(json);
-            plan.setGeneratedAt(LocalDateTime.now());
-
-            return seatingPlanRepository.save(plan);
-
-        } catch (Exception e) {
-            throw new ApiException("invalid seating json");
-        }
+        return seatingPlanRepository.save(plan);
     }
 
     @Override
-    public SeatingPlan getPlanById(Long id) {
-        return seatingPlanRepository.findById(id)
-                .orElseThrow(() ->
-                        new ApiException("plan not found"));
-    }
+    public SeatingPlan getPlanByExamSessionId(Long examSessionId) {
 
-    @Override
-    public List<SeatingPlan> getPlansBySession(Long sessionId) {
-        return seatingPlanRepository.findByExamSessionId(sessionId);
-    }
+        Optional<SeatingPlan> plan =
+                seatingPlanRepository.findByExamSessionId(examSessionId);
 
-    @Override
-    public String getSeatByRollNumber(Long planId, String rollNumber) {
-
-        SeatingPlan plan = getPlanById(planId);
-
-        try {
-            Map<String, String> map =
-                new ObjectMapper().readValue(
-                    plan.getArrangementJson(), Map.class);
-
-            return map.entrySet()
-                    .stream()
-                    .filter(e -> e.getValue().equals(rollNumber))
-                    .map(Map.Entry::getKey)
-                    .findFirst()
-                    .orElse(null);
-
-        } catch (Exception e) {
-            throw new ApiException("invalid seating json");
-        }
+        return plan.orElseThrow(() ->
+                new ApiException("Seating plan not found"));
     }
 }
