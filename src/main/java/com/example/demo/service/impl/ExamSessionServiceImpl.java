@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -29,11 +30,12 @@ public class ExamSessionServiceImpl implements ExamSessionService {
     public ExamSession createSession(ExamSession session) {
 
         if (session.getExamDate().isBefore(LocalDate.now())) {
-            throw new ApiException("Exam date is in the past");
+            throw new ApiException("exam date is in the past");
         }
 
-        if (session.getStudents() == null || session.getStudents().isEmpty()) {
-            throw new ApiException("At least 1 student required");
+        if (session.getStudents() == null ||
+            session.getStudents().isEmpty()) {
+            throw new ApiException("at least 1 student required");
         }
 
         return examSessionRepository.save(session);
@@ -42,7 +44,8 @@ public class ExamSessionServiceImpl implements ExamSessionService {
     @Override
     public ExamSession getSessionById(Long id) {
         return examSessionRepository.findById(id)
-                .orElseThrow(() -> new ApiException("Session not found"));
+                .orElseThrow(() ->
+                        new ApiException("session not found"));
     }
 
     @Override
@@ -54,7 +57,12 @@ public class ExamSessionServiceImpl implements ExamSessionService {
     public ExamSession addStudentToSession(Long sessionId, Long studentId) {
         ExamSession session = getSessionById(sessionId);
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new ApiException("Student not found"));
+                .orElseThrow(() ->
+                        new ApiException("student not found"));
+
+        if (session.getStudents() == null) {
+            session.setStudents(new HashSet<>());
+        }
 
         session.getStudents().add(student);
         return examSessionRepository.save(session);

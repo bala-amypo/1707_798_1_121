@@ -22,11 +22,13 @@ public class ExamRoomServiceImpl implements ExamRoomService {
     public ExamRoom addRoom(ExamRoom room) {
 
         if (room.getRows() <= 0 || room.getColumns() <= 0) {
-            throw new ApiException("Invalid room layout");
+            throw new ApiException("invalid room size");
         }
 
-        if (examRoomRepository.findByRoomNumber(room.getRoomNumber()).isPresent()) {
-            throw new ApiException("Room already exists");
+        if (examRoomRepository
+                .findByRoomNumber(room.getRoomNumber())
+                .isPresent()) {
+            throw new ApiException("room exists");
         }
 
         room.ensureCapacityMatches();
@@ -36,7 +38,8 @@ public class ExamRoomServiceImpl implements ExamRoomService {
     @Override
     public ExamRoom getRoomById(Long id) {
         return examRoomRepository.findById(id)
-                .orElseThrow(() -> new ApiException("Room not found"));
+                .orElseThrow(() ->
+                        new ApiException("room not found"));
     }
 
     @Override
@@ -46,7 +49,6 @@ public class ExamRoomServiceImpl implements ExamRoomService {
 
     @Override
     public Integer getAvailableSeats(Long roomId) {
-        ExamRoom room = getRoomById(roomId);
-        return room.getCapacity();
+        return getRoomById(roomId).getCapacity();
     }
 }

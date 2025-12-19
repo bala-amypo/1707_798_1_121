@@ -1,11 +1,8 @@
 package com.example.demo.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.exception.ApiException;
@@ -17,6 +14,7 @@ import com.example.demo.repository.ExamRoomRepository;
 import com.example.demo.repository.ExamSessionRepository;
 import com.example.demo.repository.SeatingPlanRepository;
 import com.example.demo.service.SeatingPlanService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class SeatingPlanServiceImpl implements SeatingPlanService {
@@ -37,43 +35,49 @@ public class SeatingPlanServiceImpl implements SeatingPlanService {
     public SeatingPlan generateSeatingPlan(Long examSessionId) {
 
         ExamSession session = examSessionRepository.findById(examSessionId)
-                .orElseThrow(() -> new ApiException("Session not found"));
+                .orElseThrow(() ->
+                        new ApiException("session not found"));
 
         int studentCount = session.getStudents().size();
 
-        List<ExamRoom> rooms = examRoomRepository.findAll();
-        ExamRoom selectedRoom = rooms.stream()
-                .filter(r -> r.getCapacity() >= studentCount)
-                .findFirst()
-                .orElseThrow(() -> new ApiException("No room available"));
+        List<ExamRoom> rooms =
+                examRoomRepository.findByCapacityGreaterThanEqual(studentCount);
 
-        Map<String, String> allocation = new HashMap<>();
+        if (rooms.isEmpty()) {
+            throw new ApiException("no room available");
+        }
+
+        ExamRoom room = rooms.get(0);
+
+        Map<String, String> allocation = new LinkedHashMap<>();
         int seat = 1;
+
         for (Student s : session.getStudents()) {
             allocation.put("Seat-" + seat++, s.getRollNumber());
         }
 
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            String json = mapper.writeValueAsString(allocation);
+            String json =
+                    new ObjectMapper().writeValueAsString(allocation);
 
             SeatingPlan plan = new SeatingPlan();
             plan.setExamSession(session);
-            plan.setExamRoom(selectedRoom);
-            plan.setSeatAllocation(json);
+            plan.setRoom(room);
+            plan.setArrangementJson(json);
             plan.setGeneratedAt(LocalDateTime.now());
 
             return seatingPlanRepository.save(plan);
 
         } catch (Exception e) {
-            throw new ApiException("Invalid seating JSON");
+            throw new ApiException("invalid seating json");
         }
     }
 
     @Override
     public SeatingPlan getPlanById(Long id) {
         return seatingPlanRepository.findById(id)
-                .orElseThrow(() -> new ApiException("Plan not found"));
+                .orElseThrow(() ->
+                        new ApiException("plan not found"));
     }
 
     @Override
@@ -83,7 +87,23 @@ public class SeatingPlanServiceImpl implements SeatingPlanService {
 
     @Override
     public String getSeatByRollNumber(Long planId, String rollNumber) {
+
         SeatingPlan plan = getPlanById(planId);
-        return plan.getSeatAllocation();
+
+        try {
+            Map<String, String> map =
+                new ObjectMapper().readValue(
+                    plan.getArrangementJson(), Map.class);
+
+            return map.entrySet()
+                    .stream()
+                    .filter(e -> e.getValue().equals(rollNumber))
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElse(null);
+
+        } catch (Exception e) {
+            throw new ApiException("invalid seating json");
+        }
     }
 }
