@@ -22,8 +22,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User register(User user) {
+
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new ApiException("User already exists");
+            throw new ApiException("email already exists");
         }
 
         if (user.getRole() == null) {
@@ -37,6 +38,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ApiException("User not found"));
+                .orElseThrow(() ->
+                        new ApiException("user not found"));
     }
 }

@@ -21,16 +21,20 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Student addStudent(Student student) {
 
-        if (student.getRollNumber() == null || student.getName() == null) {
-            throw new ApiException("Invalid student data");
+        if (student.getRollNumber() == null ||
+            student.getName() == null ||
+            student.getYear() == null) {
+            throw new ApiException("invalid student data");
         }
 
-        if (studentRepository.findByRollNumber(student.getRollNumber()).isPresent()) {
-            throw new ApiException("Student already exists");
+        if (student.getYear() < 1 || student.getYear() > 5) {
+            throw new ApiException("invalid year");
         }
 
-        if (student.getYear() == null || student.getYear() < 1 || student.getYear() > 5) {
-            throw new ApiException("Invalid year");
+        if (studentRepository
+                .findByRollNumber(student.getRollNumber())
+                .isPresent()) {
+            throw new ApiException("roll number exists");
         }
 
         return studentRepository.save(student);
@@ -39,13 +43,15 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Student getStudentById(Long id) {
         return studentRepository.findById(id)
-                .orElseThrow(() -> new ApiException("Student not found"));
+                .orElseThrow(() ->
+                        new ApiException("student not found"));
     }
 
     @Override
     public Student getStudentByRollNumber(String rollNumber) {
         return studentRepository.findByRollNumber(rollNumber)
-                .orElseThrow(() -> new ApiException("Student not found"));
+                .orElseThrow(() ->
+                        new ApiException("student not found"));
     }
 
     @Override
