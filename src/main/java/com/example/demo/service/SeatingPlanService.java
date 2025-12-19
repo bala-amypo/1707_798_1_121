@@ -6,7 +6,7 @@ import com.example.demo.model.SeatingPlan;
 
 public interface SeatingPlanService {
 
-    SeatingPlan generateSeatingPlan(Long examSessionId);
+    SeatingPlan generatePlan(Long examSessionId, Long roomId, String arrangementJson);
 
     SeatingPlan getPlanById(Long id);
 

@@ -44,43 +44,44 @@ public class SeatingPlanServiceImpl implements SeatingPlanService {
 
         SeatingPlan plan = new SeatingPlan();
         plan.setExamSession(session);
-        plan.setRoom(room);
-        plan.setArrangementJson(arrangementJson);
-
-        // ❌ DO NOT set generatedAt manually
-        // ✔ @PrePersist handles it
+        plan.setExamRoom(room);
+        plan.setSeatAllocation(arrangementJson);
 
         return seatingPlanRepository.save(plan);
     }
 
     @Override
-    public SeatingPlan getPlanByExamSessionId(Long examSessionId) {
-
-        List<SeatingPlan> plans =
-                seatingPlanRepository.findByExamSessionId(examSessionId);
-
-        if (plans == null || plans.isEmpty()) {
-            throw new ApiException("Seating plan not found");
-        }
-
-        return plans.get(0);
+    public SeatingPlan getPlanById(Long id) {
+        return seatingPlanRepository.findById(id)
+                .orElseThrow(() -> new ApiException("Seating plan not found"));
     }
 
     @Override
-    public String getSeatByRollNumber(Long examSessionId, String rollNumber) {
+    public List<SeatingPlan> getPlansBySession(Long sessionId) {
+        return seatingPlanRepository.findByExamSessionId(sessionId);
+    }
 
-        SeatingPlan plan = getPlanByExamSessionId(examSessionId);
+    @Override
+    public String getSeatByRollNumber(Long planId, String rollNumber) {
+
+        SeatingPlan plan = getPlanById(planId);
 
         try {
-            Map<String, String> seatingMap =
+            Map<String, String> allocation =
                     objectMapper.readValue(
-                            plan.getArrangementJson(),
+                            plan.getSeatAllocation(),
                             new TypeReference<Map<String, String>>() {});
 
-            return seatingMap.get(rollNumber);
+            String seat = allocation.get(rollNumber);
+
+            if (seat == null) {
+                throw new ApiException("Seat not found for roll number");
+            }
+
+            return seat;
 
         } catch (Exception e) {
-            throw new ApiException("Error parsing seating arrangement");
+            throw new ApiException("Invalid seating plan data");
         }
     }
 }
