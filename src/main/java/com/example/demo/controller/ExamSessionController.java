@@ -1,47 +1,39 @@
 package com.example.demo.controller;
 
-import java.util.List;
-import java.util.Set;
-
+import com.example.demo.model.ExamSession;
+import com.example.demo.service.ExamSessionService;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.demo.model.ExamSession;
-import com.example.demo.model.Student;
-import com.example.demo.service.ExamSessionService;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/sessions")
 public class ExamSessionController {
 
-    private final ExamSessionService examSessionService;
+    private final ExamSessionService service;
 
-    public ExamSessionController(ExamSessionService examSessionService) {
-        this.examSessionService = examSessionService;
+    public ExamSessionController(ExamSessionService service) {
+        this.service = service;
     }
 
     @PostMapping
-    public ExamSession create(@RequestBody ExamSession session) {
-        return examSessionService.createSession(session);
-    }
-
-    @GetMapping
-    public List<ExamSession> getAll() {
-        return examSessionService.getAllSessions();
+    public ExamSession save(@RequestBody ExamSession s) {
+        return service.save(s);
     }
 
     @GetMapping("/{id}")
     public ExamSession get(@PathVariable Long id) {
-        return examSessionService.getSessionById(id);
+        return service.get(id);
+    }
+
+    @GetMapping
+    public List<ExamSession> getAll() {
+        return service.getAll();
     }
 
     @PostMapping("/{sessionId}/students/{studentId}")
-    public ExamSession addStudent(@PathVariable Long sessionId,
-                                  @PathVariable Long studentId) {
-        return examSessionService.addStudentToSession(sessionId, studentId);
-    }
-
-    @GetMapping("/{sessionId}/students")
-    public Set<Student> getStudents(@PathVariable Long sessionId) {
-        return examSessionService.getStudentsForSession(sessionId);
+    public void add(@PathVariable Long sessionId, @PathVariable Long studentId) {
+        service.addStudent(sessionId, studentId);
     }
 }
+ 

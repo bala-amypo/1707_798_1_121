@@ -1,45 +1,33 @@
 package com.example.demo.controller;
 
-import java.util.List;
-
-import org.springframework.web.bind.annotation.*;
-
 import com.example.demo.model.Student;
 import com.example.demo.service.StudentService;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/students")
 public class StudentController {
 
-    private final StudentService studentService;
+    private final StudentService service;
 
-    public StudentController(StudentService studentService) {
-        this.studentService = studentService;
+    public StudentController(StudentService service) {
+        this.service = service;
     }
 
     @PostMapping
-    public Student addStudent(@RequestBody Student student) {
-        return studentService.addStudent(student);
-    }
-
-    @GetMapping
-    public List<Student> getAllStudents() {
-        return studentService.getAllStudents();
+    public Student save(@RequestBody Student s) {
+        return service.save(s);
     }
 
     @GetMapping("/{id}")
-    public Student getStudent(@PathVariable Long id) {
-        return studentService.getStudentById(id);
+    public Student get(@PathVariable Long id) {
+        return service.get(id);
     }
 
-    @PutMapping("/{id}")
-    public Student updateStudent(@PathVariable Long id,
-                                 @RequestBody Student student) {
-        return studentService.updateStudent(id, student);
-    }
-
-    @GetMapping("/lookup/{rollNumber}")
-    public Student getByRoll(@PathVariable String rollNumber) {
-        return studentService.getStudentByRollNumber(rollNumber);
+    @GetMapping
+    public List<Student> getAll() {
+        return service.getAll();
     }
 }

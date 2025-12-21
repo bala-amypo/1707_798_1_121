@@ -1,40 +1,40 @@
 package com.example.demo.controller;
 
-import java.util.List;
-
-import org.springframework.web.bind.annotation.*;
-
 import com.example.demo.model.SeatingPlan;
 import com.example.demo.service.SeatingPlanService;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/seating-plans")
 public class SeatingPlanController {
 
-    private final SeatingPlanService seatingPlanService;
+    private final SeatingPlanService service;
 
-    public SeatingPlanController(SeatingPlanService seatingPlanService) {
-        this.seatingPlanService = seatingPlanService;
+    public SeatingPlanController(SeatingPlanService service) {
+        this.service = service;
     }
 
     @PostMapping("/generate")
-    public SeatingPlan generate(@RequestParam Long examSessionId) {
-        return seatingPlanService.generateSeatingPlan(examSessionId);
+    public SeatingPlan generate(@RequestParam Long sessionId,
+                                @RequestParam Long roomId) {
+        return service.generate(sessionId, roomId);
     }
 
     @GetMapping("/{id}")
-    public SeatingPlan getPlan(@PathVariable Long id) {
-        return seatingPlanService.getPlanById(id);
+    public SeatingPlan get(@PathVariable Long id) {
+        return service.get(id);
     }
 
     @GetMapping("/session/{sessionId}")
-    public List<SeatingPlan> getBySession(@PathVariable Long sessionId) {
-        return seatingPlanService.getPlansBySession(sessionId);
+    public List<SeatingPlan> bySession(@PathVariable Long sessionId) {
+        return service.getBySession(sessionId);
     }
 
-    @GetMapping("/{planId}/seat/{rollNumber}")
-    public String getSeat(@PathVariable Long planId,
-                          @PathVariable String rollNumber) {
-        return seatingPlanService.getSeatByRollNumber(planId, rollNumber);
+    @GetMapping("/{planId}/seat/{roll}")
+    public String seat(@PathVariable Long planId,
+                       @PathVariable String roll) {
+        return service.getSeat(planId, roll);
     }
 }

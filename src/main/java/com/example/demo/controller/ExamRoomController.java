@@ -1,39 +1,38 @@
 package com.example.demo.controller;
 
-import java.util.List;
-
-import org.springframework.web.bind.annotation.*;
-
 import com.example.demo.model.ExamRoom;
 import com.example.demo.service.ExamRoomService;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/rooms")
 public class ExamRoomController {
 
-    private final ExamRoomService examRoomService;
+    private final ExamRoomService service;
 
-    public ExamRoomController(ExamRoomService examRoomService) {
-        this.examRoomService = examRoomService;
+    public ExamRoomController(ExamRoomService service) {
+        this.service = service;
     }
 
     @PostMapping
-    public ExamRoom addRoom(@RequestBody ExamRoom room) {
-        return examRoomService.addRoom(room);
-    }
-
-    @GetMapping
-    public List<ExamRoom> getAllRooms() {
-        return examRoomService.getAllRooms();
+    public ExamRoom save(@RequestBody ExamRoom r) {
+        return service.save(r);
     }
 
     @GetMapping("/{id}")
-    public ExamRoom getRoom(@PathVariable Long id) {
-        return examRoomService.getRoomById(id);
+    public ExamRoom get(@PathVariable Long id) {
+        return service.get(id);
     }
 
-    @GetMapping("/{roomId}/available-seats")
-    public Integer availableSeats(@PathVariable Long roomId) {
-        return examRoomService.getAvailableSeats(roomId);
+    @GetMapping
+    public List<ExamRoom> getAll() {
+        return service.getAll();
+    }
+
+    @GetMapping("/{id}/available-seats")
+    public int seats(@PathVariable Long id) {
+        return service.availableSeats(id);
     }
 }

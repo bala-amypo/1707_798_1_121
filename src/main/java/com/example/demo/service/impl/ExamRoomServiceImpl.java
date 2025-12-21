@@ -1,54 +1,36 @@
 package com.example.demo.service.impl;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.example.demo.exception.ApiException;
 import com.example.demo.model.ExamRoom;
 import com.example.demo.repository.ExamRoomRepository;
 import com.example.demo.service.ExamRoomService;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ExamRoomServiceImpl implements ExamRoomService {
 
-    private final ExamRoomRepository examRoomRepository;
+    private final ExamRoomRepository repo;
 
-    public ExamRoomServiceImpl(ExamRoomRepository examRoomRepository) {
-        this.examRoomRepository = examRoomRepository;
+    public ExamRoomServiceImpl(ExamRoomRepository repo) {
+        this.repo = repo;
     }
 
-    @Override
-    public ExamRoom addRoom(ExamRoom room) {
-
-        if (room.getRows() <= 0 || room.getColumns() <= 0) {
-            throw new ApiException("invalid room size");
-        }
-
-        if (examRoomRepository
-                .findByRoomNumber(room.getRoomNumber())
-                .isPresent()) {
-            throw new ApiException("room exists");
-        }
-
-        room.ensureCapacityMatches();
-        return examRoomRepository.save(room);
+    public ExamRoom save(ExamRoom r) {
+        r.setCapacity(r.getRows() * r.getColumns());
+        return repo.save(r);
     }
 
-    @Override
-    public ExamRoom getRoomById(Long id) {
-        return examRoomRepository.findById(id)
-                .orElseThrow(() ->
-                        new ApiException("room not found"));
+    public ExamRoom get(Long id) {
+        return repo.findById(id).orElseThrow(() -> new ApiException("Room not found"));
     }
 
-    @Override
-    public List<ExamRoom> getAllRooms() {
-        return examRoomRepository.findAll();
+    public List<ExamRoom> getAll() {
+        return repo.findAll();
     }
 
-    @Override
-    public Integer getAvailableSeats(Long roomId) {
-        return getRoomById(roomId).getCapacity();
+    public int availableSeats(Long roomId) {
+        return get(roomId).getCapacity();
     }
 }
