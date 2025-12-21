@@ -1,5 +1,6 @@
 package com.example.demo.config;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
@@ -11,17 +12,16 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 @Configuration
-public class SwaggerConfig {
+public class OpenApiConfig {
 
     @Bean
     public OpenAPI examSeatingOpenAPI() {
-        // Define JWT security scheme
-        SecurityScheme securityScheme = new SecurityScheme()
+        // JWT Bearer security scheme
+        SecurityScheme bearerScheme = new SecurityScheme()
                 .type(SecurityScheme.Type.HTTP)
                 .scheme("bearer")
                 .bearerFormat("JWT");
 
-        // Apply security requirement globally
         SecurityRequirement securityRequirement = new SecurityRequirement()
                 .addList("bearerAuth");
 
@@ -31,11 +31,11 @@ public class SwaggerConfig {
                         .version("1.0")
                         .description("API for managing exam seating arrangements"))
                 .servers(List.of(
-                        new Server().url("http://localhost:8080"),             // Local server
-                        new Server().url("http://9120.408procr.amypo.ai")     // Deployed server
+                        new Server().url("http://localhost:8080"), // Local server
+                        new Server().url("http://9120.408procr.amypo.ai") // Deployed server
                 ))
                 .addSecurityItem(securityRequirement)
-                .components(new io.swagger.v3.oas.models.Components()
-                        .addSecuritySchemes("bearerAuth", securityScheme));
+                .components(new Components()
+                        .addSecuritySchemes("bearerAuth", bearerScheme));
     }
 }
