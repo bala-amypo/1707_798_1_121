@@ -30,4 +30,16 @@ public class UserServiceImpl implements UserService {
         repo.save(user);
         return "User Registered Successfully";
     }
+    @Override
+public String login(AuthRequest request) {
+    User user = repo.findByEmail(request.email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    if (!encoder.matches(request.password, user.getPassword())) {
+        throw new RuntimeException("Invalid password");
+    }
+
+    return user.getEmail();
+}
+
 }
