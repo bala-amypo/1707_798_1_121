@@ -1,12 +1,12 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.exception.ApiException;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.example.demo.model.Student;
 import com.example.demo.repository.StudentRepository;
 import com.example.demo.service.StudentService;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -19,16 +19,12 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student save(Student student) {
-        if (student.getYear() < 1 || student.getYear() > 4) {
-            throw new ApiException("invalid year");
-        }
         return repo.save(student);
     }
 
     @Override
-    public Student get(Long id) {
-        return repo.findById(id)
-                .orElseThrow(() -> new ApiException("Student not found"));
+    public Student getById(Long id) {
+        return repo.findById(id).orElse(null);
     }
 
     @Override
