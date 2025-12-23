@@ -1,8 +1,11 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.*;
-import com.example.demo.service.UserService;
 import org.springframework.web.bind.annotation.*;
+
+import com.example.demo.dto.AuthRequest;
+import com.example.demo.dto.AuthResponse;
+import com.example.demo.dto.RegisterRequest;
+import com.example.demo.service.UserService;
 
 @RestController
 @RequestMapping("/auth")
@@ -15,12 +18,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public void register(@RequestBody RegisterRequest r) {
-        userService.register(r);
+    public void register(@RequestBody RegisterRequest request) {
+        userService.register(request);
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody AuthRequest r) {
-        return userService.login(r);
+    public AuthResponse login(@RequestBody AuthRequest request) {
+        return userService.login(request);
     }
 }

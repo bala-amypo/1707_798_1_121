@@ -1,14 +1,14 @@
-package com.example.demo.model;
+package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "students", uniqueConstraints = @UniqueConstraint(columnNames = "rollNumber"))
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Student {
 
     @Id
@@ -18,5 +18,5 @@ public class Student {
     private String rollNumber;
     private String name;
     private String department;
-    private Integer year;
+    private int year;
 }
