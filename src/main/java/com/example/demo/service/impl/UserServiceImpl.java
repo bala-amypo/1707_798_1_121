@@ -3,31 +3,31 @@ package com.example.demo.service.impl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.dto.AuthRequest;
-import com.example.demo.dto.AuthResponse;
 import com.example.demo.dto.RegisterRequest;
-import com.example.demo.security.JwtUtil;
+import com.example.demo.model.User;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+    private final UserRepository repo;
+    private final PasswordEncoder encoder;
 
-    public UserServiceImpl(PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
-        this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
+    public UserServiceImpl(UserRepository repo, PasswordEncoder encoder) {
+        this.repo = repo;
+        this.encoder = encoder;
     }
 
     @Override
-    public void register(RegisterRequest request) {
-        passwordEncoder.encode(request.getPassword());
-    }
+    public String register(RegisterRequest request) {
+        User user = new User();
+        user.setName(request.name);
+        user.setEmail(request.email);
+        user.setPassword(encoder.encode(request.password));
+        user.setRole(request.role);
 
-    @Override
-    public AuthResponse login(AuthRequest request) {
-        String token = jwtUtil.generateToken(request.getEmail());
-        return new AuthResponse(token);
+        repo.save(user);
+        return "User Registered Successfully";
     }
 }
