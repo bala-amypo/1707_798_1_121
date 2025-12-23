@@ -1,45 +1,34 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.exception.ApiException;
-import com.example.demo.model.ExamSession;
-import com.example.demo.model.Student;
-import com.example.demo.repository.ExamSessionRepository;
-import com.example.demo.repository.StudentRepository;
-import com.example.demo.service.ExamSessionService;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.example.demo.model.ExamSession;
+import com.example.demo.repository.ExamSessionRepository;
+import com.example.demo.service.ExamSessionService;
 
 @Service
 public class ExamSessionServiceImpl implements ExamSessionService {
 
-    private final ExamSessionRepository sessionRepo;
-    private final StudentRepository studentRepo;
+    private final ExamSessionRepository repository;
 
-    public ExamSessionServiceImpl(ExamSessionRepository sessionRepo,
-                                  StudentRepository studentRepo) {
-        this.sessionRepo = sessionRepo;
-        this.studentRepo = studentRepo;
+    public ExamSessionServiceImpl(ExamSessionRepository repository) {
+        this.repository = repository;
     }
 
-    public ExamSession save(ExamSession s) {
-        return sessionRepo.save(s);
+    @Override
+    public ExamSession save(ExamSession examSession) {
+        return repository.save(examSession);
     }
 
+    @Override
     public ExamSession get(Long id) {
-        return sessionRepo.findById(id)
-                .orElseThrow(() -> new ApiException("Session not found"));
+        return repository.findById(id).orElse(null);
     }
 
+    @Override
     public List<ExamSession> getAll() {
-        return sessionRepo.findAll();
-    }
-
-    public void addStudent(Long sessionId, Long studentId) {
-        ExamSession session = get(sessionId);
-        Student student = studentRepo.findById(studentId)
-                .orElseThrow(() -> new ApiException("Student not found"));
-        session.getStudents().add(student);
-        sessionRepo.save(session);
+        return repository.findAll();
     }
 }
