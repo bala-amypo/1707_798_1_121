@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+@Service
 public class ExamSessionServiceImpl implements ExamSessionService {
 
     private final ExamSessionRepository sessionRepo;

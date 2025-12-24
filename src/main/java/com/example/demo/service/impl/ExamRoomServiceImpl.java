@@ -8,6 +8,7 @@ import com.example.demo.exception.ApiException;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class ExamRoomServiceImpl implements ExamRoomService {
 
     private final ExamRoomRepository roomRepo;
