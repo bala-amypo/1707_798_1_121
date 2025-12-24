@@ -48,7 +48,7 @@ public class SeatingPlan {
     public void setArrangementJson(String arrangementJson) { this.arrangementJson = arrangementJson; }
     public void setGeneratedAt(LocalDateTime generatedAt) { this.generatedAt = generatedAt; }
     
-    // Builder pattern
+    // Builder pattern - IMPORTANT for tests
     public static SeatingPlanBuilder builder() {
         return new SeatingPlanBuilder();
     }
