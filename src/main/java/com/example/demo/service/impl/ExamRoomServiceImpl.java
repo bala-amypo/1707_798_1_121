@@ -1,36 +1,48 @@
 package com.example.demo.service.impl;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
 import com.example.demo.exception.ApiException;
 import com.example.demo.model.ExamRoom;
 import com.example.demo.repository.ExamRoomRepository;
 import com.example.demo.service.ExamRoomService;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ExamRoomServiceImpl implements ExamRoomService {
 
-    private final ExamRoomRepository repo;
+    private final ExamRoomRepository examRoomRepository;
 
-    public ExamRoomServiceImpl(ExamRoomRepository repo) {
-        this.repo = repo;
+    // ✅ Constructor injection only
+    public ExamRoomServiceImpl(ExamRoomRepository examRoomRepository) {
+        this.examRoomRepository = examRoomRepository;
     }
 
-    public ExamRoom save(ExamRoom r) {
-        r.setCapacity(r.getRows() * r.getColumns());
-        return repo.save(r);
+    @Override
+    public ExamRoom addRoom(ExamRoom room) {
+
+        if (room.getRows() == null || room.getColumns() == null
+                || room.getRows() <= 0 || room.getColumns() <= 0) {
+            throw new ApiException("Invalid rows or columns");
+        }
+
+        Optional<ExamRoom> existing =
+                examRoomRepository.findByRoomNumber(room.getRoomNumber());
+
+        if (existing.isPresent()) {
+            throw new ApiException("Room already exists");
+        }
+
+        // ✅ Capacity enforcement
+        room.setCapacity(room.getRows() * room.getColumns());
+
+        return examRoomRepository.save(room);
     }
 
-    public ExamRoom get(Long id) {
-        return repo.findById(id).orElseThrow(() -> new ApiException("Room not found"));
-    }
-
-    public List<ExamRoom> getAll() {
-        return repo.findAll();
-    }
-
-    public int availableSeats(Long roomId) {
-        return get(roomId).getCapacity();
+    @Override
+    public List<ExamRoom> getAllRooms() {
+        return examRoomRepository.findAll();
     }
 }

@@ -1,12 +1,12 @@
 package com.example.demo.service;
 
-import com.example.demo.model.ExamRoom;
 import java.util.List;
 
+import com.example.demo.model.ExamRoom;
+
 public interface ExamRoomService {
-    ExamRoom save(ExamRoom room);
-    ExamRoom get(Long id);
-    List<ExamRoom> getAll();
-    int availableSeats(Long roomId);
+
+    ExamRoom addRoom(ExamRoom room);
+
+    List<ExamRoom> getAllRooms();
 }
-    
