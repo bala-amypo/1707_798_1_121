@@ -1,30 +1,22 @@
-// ExamSession.java
-package com.example.demo.model;
-
-import jakarta.persistence.*;
 import lombok.*;
+import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "exam_sessions")
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ExamSession {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "course_code", nullable = false)
     private String courseCode;
-    
-    @Column(name = "exam_date", nullable = false)
     private LocalDate examDate;
-    
-    @Column(name = "exam_time", nullable = false)
     private String examTime;
     
     @ManyToMany
@@ -33,6 +25,5 @@ public class ExamSession {
         joinColumns = @JoinColumn(name = "session_id"),
         inverseJoinColumns = @JoinColumn(name = "student_id")
     )
-    @Builder.Default
-    private Set<Student> students = new HashSet<>();
+    private Set<Student> students;
 }

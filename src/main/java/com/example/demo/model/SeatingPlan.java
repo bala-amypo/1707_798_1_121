@@ -1,32 +1,29 @@
-// SeatingPlan.java
-package com.example.demo.model;
-
-import jakarta.persistence.*;
 import lombok.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "seating_plans")
-@Data
-@Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class SeatingPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "session_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "session_id")
     private ExamSession examSession;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "room_id")
     private ExamRoom room;
     
-    @Column(name = "arrangement_json", columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String arrangementJson;
     
-    @Column(name = "generated_at")
     private LocalDateTime generatedAt;
 }
