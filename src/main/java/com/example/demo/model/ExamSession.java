@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -21,17 +22,18 @@ public class ExamSession {
         joinColumns = @JoinColumn(name = "session_id"),
         inverseJoinColumns = @JoinColumn(name = "student_id")
     )
-    private Set<Student> students;
+    private Set<Student> students = new HashSet<>();
     
-    // Constructors
+    // Default constructor
     public ExamSession() {}
     
+    // Constructor with all fields
     public ExamSession(Long id, String courseCode, LocalDate examDate, String examTime, Set<Student> students) {
         this.id = id;
         this.courseCode = courseCode;
         this.examDate = examDate;
         this.examTime = examTime;
-        this.students = students;
+        this.students = students != null ? students : new HashSet<>();
     }
     
     // Getters
@@ -46,7 +48,9 @@ public class ExamSession {
     public void setCourseCode(String courseCode) { this.courseCode = courseCode; }
     public void setExamDate(LocalDate examDate) { this.examDate = examDate; }
     public void setExamTime(String examTime) { this.examTime = examTime; }
-    public void setStudents(Set<Student> students) { this.students = students; }
+    public void setStudents(Set<Student> students) { 
+        this.students = students != null ? students : new HashSet<>();
+    }
     
     // Builder pattern
     public static ExamSessionBuilder builder() {
@@ -60,11 +64,30 @@ public class ExamSession {
         private String examTime;
         private Set<Student> students;
         
-        public ExamSessionBuilder id(Long id) { this.id = id; return this; }
-        public ExamSessionBuilder courseCode(String courseCode) { this.courseCode = courseCode; return this; }
-        public ExamSessionBuilder examDate(LocalDate examDate) { this.examDate = examDate; return this; }
-        public ExamSessionBuilder examTime(String examTime) { this.examTime = examTime; return this; }
-        public ExamSessionBuilder students(Set<Student> students) { this.students = students; return this; }
+        public ExamSessionBuilder id(Long id) { 
+            this.id = id; 
+            return this; 
+        }
+        
+        public ExamSessionBuilder courseCode(String courseCode) { 
+            this.courseCode = courseCode; 
+            return this; 
+        }
+        
+        public ExamSessionBuilder examDate(LocalDate examDate) { 
+            this.examDate = examDate; 
+            return this; 
+        }
+        
+        public ExamSessionBuilder examTime(String examTime) { 
+            this.examTime = examTime; 
+            return this; 
+        }
+        
+        public ExamSessionBuilder students(Set<Student> students) { 
+            this.students = students; 
+            return this; 
+        }
         
         public ExamSession build() {
             return new ExamSession(id, courseCode, examDate, examTime, students);
