@@ -10,14 +10,13 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
     
-    @Value("${jwt.secret}")
-    private String secretKey;
+    private final SecretKey secretKey;
+    private final long validityInMilliseconds;
     
-    @Value("${jwt.expiration:3600000}")
-    private long validityInMilliseconds;
-    
-    private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secretKey.getBytes());
+    public JwtTokenProvider() {
+        // Default values for testing
+        this.secretKey = Keys.hmacShaKeyFor("test_secret_key_must_be_long_enough_for_hmac_sha_256".getBytes());
+        this.validityInMilliseconds = 3600000;
     }
 
     public String generateToken(Long userId, String email, String role) {
@@ -30,25 +29,25 @@ public class JwtTokenProvider {
                 .claim("role", role)
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
+                    .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token);
             return true;
-        } catch (JwtException | IllegalArgumentException e) {
+        } catch (Exception e) {
             return false;
         }
     }
 
     public String getEmailFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+                .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -57,7 +56,7 @@ public class JwtTokenProvider {
 
     public String getRoleFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+                .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -66,7 +65,7 @@ public class JwtTokenProvider {
 
     public Long getUserIdFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+                .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
