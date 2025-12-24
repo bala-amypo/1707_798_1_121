@@ -1,10 +1,11 @@
 package com.example.demo.service;
 
-import com.example.demo.model.Student;
-import com.example.demo.exception.ApiException;
+import com.example.demo.entity.Student;
 import java.util.List;
 
 public interface StudentService {
-    Student addStudent(Student student) throws ApiException;
-    List<Student> getAllStudents();
+
+    Student save(Student student);
+
+    List<Student> findAll();
 }

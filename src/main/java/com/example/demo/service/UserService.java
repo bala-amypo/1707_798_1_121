@@ -1,9 +1,14 @@
+com.example.demo.entity
+com.example.demo.repository
+com.example.demo.service
+com.example.demo.service.impl
 package com.example.demo.service;
 
-import com.example.demo.model.User;
-import com.example.demo.exception.ApiException;
+import com.example.demo.entity.User;
 
 public interface UserService {
-    User register(User user) throws ApiException;
-    User findByEmail(String email) throws ApiException;
+
+    User register(User user);
+
+    User findByEmail(String email);
 }
