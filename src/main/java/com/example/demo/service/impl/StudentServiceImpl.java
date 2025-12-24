@@ -2,11 +2,11 @@ package com.example.demo.service.impl;
 
 import com.example.demo.model.Student;
 import com.example.demo.repository.StudentRepository;
-import com.example.demo.service.StudentService;
 import com.example.demo.exception.ApiException;
+import com.example.demo.service.StudentService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -18,21 +18,14 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Student addStudent(Student student) {
-        if (student.getRollNumber() == null || student.getRollNumber().isEmpty()) {
-            throw new ApiException("Student roll number is required");
+    public Student addStudent(Student s) {
+        if (s.getRollNumber() == null || s.getName() == null || s.getYear() < 1 || s.getYear() > 5) {
+            throw new ApiException("Invalid student data");
         }
-
-        if (student.getYear() < 1 || student.getYear() > 4) {
-            throw new ApiException("Student year must be between 1 and 4");
-        }
-
-        Optional<Student> existing = studentRepo.findByRollNumber(student.getRollNumber());
-        if (existing.isPresent()) {
-            throw new ApiException("Student with this roll number already exists");
-        }
-
-        return studentRepo.save(student);
+        studentRepo.findByRollNumber(s.getRollNumber()).ifPresent(existing -> {
+            throw new ApiException("Student with roll number already exists");
+        });
+        return studentRepo.save(s);
     }
 
     @Override

@@ -4,13 +4,12 @@ import com.example.demo.model.ExamSession;
 import com.example.demo.model.Student;
 import com.example.demo.repository.ExamSessionRepository;
 import com.example.demo.repository.StudentRepository;
-import com.example.demo.service.ExamSessionService;
 import com.example.demo.exception.ApiException;
+import com.example.demo.service.ExamSessionService;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class ExamSessionServiceImpl implements ExamSessionService {
@@ -24,23 +23,19 @@ public class ExamSessionServiceImpl implements ExamSessionService {
     }
 
     @Override
-    public ExamSession createSession(ExamSession session) {
-        if (session.getExamDate() == null || session.getExamDate().isBefore(LocalDate.now())) {
+    public ExamSession createSession(ExamSession s) {
+        if (s.getExamDate().isBefore(LocalDate.now())) {
             throw new ApiException("Exam date cannot be in the past");
         }
-
-        Set<Student> students = session.getStudents();
-        if (students == null || students.isEmpty()) {
-            throw new ApiException("Exam session must have at least 1 student");
+        if (s.getStudents() == null || s.getStudents().isEmpty()) {
+            throw new ApiException("Session must have at least 1 student");
         }
-
-        return sessionRepo.save(session);
+        return sessionRepo.save(s);
     }
 
     @Override
     public ExamSession getSession(Long id) {
-        return sessionRepo.findById(id)
-                .orElseThrow(() -> new ApiException("Session not found"));
+        return sessionRepo.findById(id).orElseThrow(() -> new ApiException("Session not found"));
     }
 
     @Override
