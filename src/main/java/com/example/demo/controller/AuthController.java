@@ -1,11 +1,9 @@
-// AuthController.java
 package com.example.demo.controller;
 
 import com.example.demo.dto.AuthRequest;
 import com.example.demo.dto.AuthResponse;
 import com.example.demo.dto.RegisterRequest;
 import com.example.demo.model.User;
-import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtTokenProvider;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,17 +21,15 @@ public class AuthController {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        User user = User.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .password(request.getPassword())
-                .role(request.getRole())
-                .build();
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword());
+        user.setRole(request.getRole() != null ? request.getRole() : "STAFF");
         
         User registered = userService.register(user);
         return ResponseEntity.ok(registered);
@@ -41,24 +37,29 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-        
-        User user = userService.findByEmail(request.getEmail());
-        String token = jwtTokenProvider.generateToken(
-                user.getId(),
-                user.getEmail(),
-                user.getRole()
-        );
-        
-        return ResponseEntity.ok(AuthResponse.builder()
-                .token(token)
-                .email(user.getEmail())
-                .role(user.getRole())
-                .build());
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+            
+            User user = userService.findByEmail(request.getEmail());
+            String token = jwtTokenProvider.generateToken(
+                    user.getId(),
+                    user.getEmail(),
+                    user.getRole()
+            );
+            
+            AuthResponse response = new AuthResponse();
+            response.setToken(token);
+            response.setEmail(user.getEmail());
+            response.setRole(user.getRole());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid email/password");
+        }
     }
 }
