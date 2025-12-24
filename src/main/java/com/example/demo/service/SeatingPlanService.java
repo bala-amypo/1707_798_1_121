@@ -1,11 +1,11 @@
 package com.example.demo.service;
 
-import com.example.demo.model.SeatingPlan;
-import com.example.demo.exception.ApiException;
+import com.example.demo.entity.SeatingPlan;
 import java.util.List;
 
 public interface SeatingPlanService {
-    SeatingPlan generatePlan(Long sessionId) throws ApiException;
-    SeatingPlan getPlan(Long planId) throws ApiException;
-    List<SeatingPlan> getPlansBySession(Long sessionId);
+
+    SeatingPlan save(SeatingPlan plan);
+
+    List<SeatingPlan> findAll();
 }

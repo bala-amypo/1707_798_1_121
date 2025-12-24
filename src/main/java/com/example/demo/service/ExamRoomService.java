@@ -1,10 +1,11 @@
 package com.example.demo.service;
 
-import com.example.demo.model.ExamRoom;
-import com.example.demo.exception.ApiException;
+import com.example.demo.entity.ExamRoom;
 import java.util.List;
 
 public interface ExamRoomService {
-    ExamRoom addRoom(ExamRoom room) throws ApiException;
-    List<ExamRoom> getAllRooms();
+
+    ExamRoom save(ExamRoom room);
+
+    List<ExamRoom> findAll();
 }

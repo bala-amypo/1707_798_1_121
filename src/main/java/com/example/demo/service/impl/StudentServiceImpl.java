@@ -1,35 +1,28 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.model.Student;
-import com.example.demo.repository.StudentRepository;
-import com.example.demo.exception.ApiException;
-import com.example.demo.service.StudentService;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+
+import com.example.demo.entity.Student;
+import com.example.demo.repository.StudentRepository;
+import com.example.demo.service.StudentService;
 
 @Service
 public class StudentServiceImpl implements StudentService {
 
-    private final StudentRepository studentRepo;
+    private final StudentRepository repo;
 
-    public StudentServiceImpl(StudentRepository studentRepo) {
-        this.studentRepo = studentRepo;
+    public StudentServiceImpl(StudentRepository repo) {
+        this.repo = repo;
     }
 
     @Override
-    public Student addStudent(Student s) {
-        if (s.getRollNumber() == null || s.getName() == null || s.getYear() < 1 || s.getYear() > 5) {
-            throw new ApiException("Invalid student data");
-        }
-        studentRepo.findByRollNumber(s.getRollNumber()).ifPresent(existing -> {
-            throw new ApiException("Student with roll number already exists");
-        });
-        return studentRepo.save(s);
+    public Student save(Student student) {
+        return repo.save(student);
     }
 
     @Override
-    public List<Student> getAllStudents() {
-        return studentRepo.findAll();
+    public List<Student> findAll() {
+        return repo.findAll();
     }
 }
