@@ -18,8 +18,10 @@ public class ExamRoom {
     @Column(name = "room_number", nullable = false, unique = true)
     private String roomNumber;
     
+    @Column(name = "room_rows")  // Change from "rows" to "room_rows"
     private Integer rows;
     
+    @Column(name = "room_columns")  // Change from "columns" to "room_columns"
     private Integer columns;
     
     private Integer capacity;
