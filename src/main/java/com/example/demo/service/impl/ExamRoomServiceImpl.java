@@ -1,71 +1,52 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.exception.ApiException;
-import com.example.demo.model.ExamSession;
-import com.example.demo.model.Student;
-import com.example.demo.repository.ExamSessionRepository;
-import com.example.demo.repository.StudentRepository;
-import com.example.demo.service.ExamSessionService;
+import com.example.demo.model.ExamRoom;
+import com.example.demo.repository.ExamRoomRepository;
+import com.example.demo.service.ExamRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class ExamSessionServiceImpl implements ExamSessionService {
-    private final ExamSessionRepository sessionRepository;
-    private final StudentRepository studentRepository;
+public class ExamRoomServiceImpl implements ExamRoomService {
+    private final ExamRoomRepository roomRepository;
 
     @Override
-    public ExamSession createSession(ExamSession session) {
-        validateSession(session);
+    public ExamRoom addRoom(ExamRoom room) {
+        validateRoom(room);
         
-        if (session.getExamDate().isBefore(LocalDate.now())) {
-            throw new ApiException("Exam date cannot be in the past");
+        if (roomRepository.findByRoomNumber(room.getRoomNumber()).isPresent()) {
+            throw new ApiException("Room with room number already exists");
         }
         
-        if (session.getStudents().isEmpty()) {
-            throw new ApiException("Session must have at least 1 student");
-        }
-        
-        // For testing, accept the students as-is without validation
-        // In real application, we would validate them exist
-        // Set<Student> managedStudents = new HashSet<>();
-        // for (Student student : session.getStudents()) {
-        //     Student managedStudent = studentRepository.findById(student.getId())
-        //             .orElseThrow(() -> new ApiException("Student not found with id: " + student.getId()));
-        //     managedStudents.add(managedStudent);
-        // }
-        // session.setStudents(managedStudents);
-        
-        return sessionRepository.save(session);
+        room.ensureCapacityMatches();
+        return roomRepository.save(room);
     }
 
     @Override
-    public ExamSession getSession(Long id) {
-        return sessionRepository.findById(id)
-                .orElseThrow(() -> new ApiException("Session not found with id: " + id));
+    public List<ExamRoom> getAllRooms() {
+        return roomRepository.findAll();
     }
 
     @Override
-    public List<ExamSession> getSessionsByDate(LocalDate date) {
-        return sessionRepository.findByExamDate(date);
+    public ExamRoom getRoom(Long id) {
+        return roomRepository.findById(id)
+                .orElseThrow(() -> new ApiException("Room not found with id: " + id));
     }
 
-    private void validateSession(ExamSession session) {
-        if (session.getCourseCode() == null || session.getCourseCode().isEmpty()) {
-            throw new ApiException("Course code is required");
+    private void validateRoom(ExamRoom room) {
+        if (room.getRoomNumber() == null || room.getRoomNumber().isEmpty()) {
+            throw new ApiException("Room number is required");
         }
         
-        if (session.getExamDate() == null) {
-            throw new ApiException("Exam date is required");
+        if (room.getRows() != null && room.getRows() <= 0) {
+            throw new ApiException("Rows must be positive");
         }
         
-        if (session.getExamTime() == null || session.getExamTime().isEmpty()) {
-            throw new ApiException("Exam time is required");
+        if (room.getColumns() != null && room.getColumns() <= 0) {
+            throw new ApiException("Columns must be positive");
         }
     }
 }
