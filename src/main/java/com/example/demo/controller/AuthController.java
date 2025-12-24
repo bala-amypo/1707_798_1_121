@@ -1,70 +1,84 @@
 package com.example.demo.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.bind.annotation.*;
-
 import com.example.demo.dto.AuthRequest;
 import com.example.demo.dto.AuthResponse;
 import com.example.demo.dto.RegisterRequest;
 import com.example.demo.model.User;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtTokenProvider;
-import com.example.demo.service.UserService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
-
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    // ✅ REGISTER
+    // ---------------- REGISTER ----------------
     @PostMapping("/register")
-    public String register(@RequestBody RegisterRequest req) {
+    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
 
-        User u = new User();
-        u.setName(req.getName());
-        u.setEmail(req.getEmail());
-        u.setPassword(req.getPassword());
-        u.setRole(req.getRole());
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body("Email already exists");
+        }
 
-        userService.register(u);
-        return "User registered successfully";
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(request.getRole());
+
+        userRepository.save(user);
+
+        return ResponseEntity.ok("User registered successfully");
     }
 
-    // ✅ LOGIN
+    // ---------------- LOGIN ----------------
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody AuthRequest req) {
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
 
+        // authenticate user
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        req.getEmail(),
-                        req.getPassword()
+                        request.getEmail(),
+                        request.getPassword()
                 )
         );
 
-        User u = userService.findByEmail(req.getEmail());
+        // fetch user
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // ✅ FIXED: PASS ALL 3 REQUIRED ARGUMENTS
+        // generate token
         String token = jwtTokenProvider.generateToken(
-                u.getId(),
-                u.getEmail(),
-                u.getRole()
+                user.getId(),
+                user.getEmail(),
+                user.getRole()
         );
 
-        AuthResponse res = new AuthResponse();
-        res.setToken(token);
-        res.setUserId(u.getId());
-        res.setEmail(u.getEmail());
-        res.setRole(u.getRole());
+        // response
+        AuthResponse response = new AuthResponse();
+        response.setToken(token);
+        response.setUserId(user.getId());
+        response.setEmail(user.getEmail());
+        response.setRole(user.getRole());
 
-        return res;
+        return ResponseEntity.ok(response);
     }
 }
