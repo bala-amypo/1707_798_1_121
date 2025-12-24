@@ -1,58 +1,58 @@
-package com.example.demo.security;
+// package com.example.demo.security;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
+// import jakarta.servlet.FilterChain;
+// import jakarta.servlet.ServletException;
+// import jakarta.servlet.http.HttpServletRequest;
+// import jakarta.servlet.http.HttpServletResponse;
+// import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+// import org.springframework.security.core.context.SecurityContextHolder;
+// import org.springframework.security.core.userdetails.UserDetails;
+// import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+// import org.springframework.stereotype.Component;
+// import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-import java.util.Collections;
+// import java.io.IOException;
+// import java.util.Collections;
 
-@Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+// @Component
+// public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtTokenProvider jwtTokenProvider;
+//     private final JwtTokenProvider jwtTokenProvider;
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
+//     public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
+//         this.jwtTokenProvider = jwtTokenProvider;
+//     }
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+//     @Override
+//     protected void doFilterInternal(HttpServletRequest request,
+//                                     HttpServletResponse response,
+//                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
-        String token = null;
+//         String authHeader = request.getHeader("Authorization");
+//         String token = null;
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
-        }
+//         if (authHeader != null && authHeader.startsWith("Bearer ")) {
+//             token = authHeader.substring(7);
+//         }
 
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            String email = jwtTokenProvider.getEmailFromToken(token);
-            Long userId = jwtTokenProvider.getUserIdFromToken(token);
-            String role = jwtTokenProvider.getRoleFromToken(token);
+//         if (token != null && jwtTokenProvider.validateToken(token)) {
+//             String email = jwtTokenProvider.getEmailFromToken(token);
+//             Long userId = jwtTokenProvider.getUserIdFromToken(token);
+//             String role = jwtTokenProvider.getRoleFromToken(token);
 
-            UserDetails userDetails = org.springframework.security.core.userdetails.User
-                    .withUsername(email)
-                    .password("") // password not needed for token auth
-                    .authorities(role)
-                    .build();
+//             UserDetails userDetails = org.springframework.security.core.userdetails.User
+//                     .withUsername(email)
+//                     .password("") // password not needed for token auth
+//                     .authorities(role)
+//                     .build();
 
-            UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+//             UsernamePasswordAuthenticationToken auth =
+//                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-            auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(auth);
-        }
+//             auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+//             SecurityContextHolder.getContext().setAuthentication(auth);
+//         }
 
-        filterChain.doFilter(request, response);
-    }
-}
+//         filterChain.doFilter(request, response);
+//     }
+// }
