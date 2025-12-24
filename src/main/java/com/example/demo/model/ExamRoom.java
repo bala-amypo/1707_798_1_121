@@ -25,17 +25,6 @@ public class ExamRoom {
         this.rows = rows;
         this.columns = columns;
         this.capacity = capacity;
-        ensureCapacityMatches();
-    }
-    
-    @PrePersist
-    @PreUpdate
-    public void ensureCapacityMatches() {
-        if (rows != null && columns != null) {
-            capacity = rows * columns;
-        } else if (capacity == null) {
-            capacity = 1;
-        }
     }
     
     // Getters
@@ -48,14 +37,8 @@ public class ExamRoom {
     // Setters
     public void setId(Long id) { this.id = id; }
     public void setRoomNumber(String roomNumber) { this.roomNumber = roomNumber; }
-    public void setRows(Integer rows) { 
-        this.rows = rows; 
-        ensureCapacityMatches();
-    }
-    public void setColumns(Integer columns) { 
-        this.columns = columns; 
-        ensureCapacityMatches();
-    }
+    public void setRows(Integer rows) { this.rows = rows; }
+    public void setColumns(Integer columns) { this.columns = columns; }
     public void setCapacity(Integer capacity) { this.capacity = capacity; }
     
     // Builder pattern
@@ -77,7 +60,22 @@ public class ExamRoom {
         public ExamRoomBuilder capacity(Integer capacity) { this.capacity = capacity; return this; }
         
         public ExamRoom build() {
-            return new ExamRoom(id, roomNumber, rows, columns, capacity);
+            ExamRoom room = new ExamRoom();
+            room.setId(id);
+            room.setRoomNumber(roomNumber);
+            room.setRows(rows);
+            room.setColumns(columns);
+            room.setCapacity(capacity);
+            return room;
+        }
+    }
+    
+    // Helper method
+    public void ensureCapacityMatches() {
+        if (rows != null && columns != null) {
+            capacity = rows * columns;
+        } else if (capacity == null) {
+            capacity = 1;
         }
     }
 }
