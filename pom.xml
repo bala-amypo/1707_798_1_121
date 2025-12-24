@@ -144,17 +144,13 @@
                 </configuration>
             </plugin>
             
-            <!-- Maven Surefire Plugin (for TestNG) -->
+            <!-- Maven Surefire Plugin (for TestNG) - NO suiteXmlFiles -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <!-- Force TestNG usage -->
-                    <suiteXmlFiles>
-                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
-                    </suiteXmlFiles>
-                    <!-- OR use includes pattern -->
+                    <!-- Using includes pattern instead of suiteXmlFiles -->
                     <includes>
                         <include>**/*Test.java</include>
                         <include>**/*Tests.java</include>
