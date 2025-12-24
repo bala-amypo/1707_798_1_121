@@ -1,21 +1,18 @@
+// ExamSessionController.java
 package com.example.demo.controller;
 
 import com.example.demo.model.ExamSession;
 import com.example.demo.service.ExamSessionService;
-import com.example.demo.exception.ApiException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.Optional;
+import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/sessions")
+@RequestMapping("/api/sessions")
+@RequiredArgsConstructor
 public class ExamSessionController {
-
     private final ExamSessionService sessionService;
-
-    public ExamSessionController(ExamSessionService sessionService) {
-        this.sessionService = sessionService;
-    }
 
     @PostMapping
     public ResponseEntity<ExamSession> create(@RequestBody ExamSession session) {
@@ -25,5 +22,10 @@ public class ExamSessionController {
     @GetMapping("/{id}")
     public ResponseEntity<ExamSession> get(@PathVariable Long id) {
         return ResponseEntity.ok(sessionService.getSession(id));
+    }
+
+    @GetMapping("/date/{date}")
+    public ResponseEntity<?> getByDate(@PathVariable String date) {
+        return ResponseEntity.ok(sessionService.getSessionsByDate(LocalDate.parse(date)));
     }
 }
