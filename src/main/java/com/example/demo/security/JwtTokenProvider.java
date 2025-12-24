@@ -1,26 +1,41 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.*;
+import java.util.Date;
+
 import org.springframework.stereotype.Component;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
 public class JwtTokenProvider {
 
-    private final String SECRET = "examsecretkey";
+    // ✅ SIMPLE STRING SECRET (works in old jjwt)
+    private final String SECRET_KEY = "mysecretkey123456";
 
-    public String generateToken(String email, String role) {
+    // ✅ GENERATE TOKEN
+    public String generateToken(Long userId, String email, String role) {
+
         return Jwts.builder()
                 .setSubject(email)
+                .claim("userId", userId)
                 .claim("role", role)
-                .signWith(SignatureAlgorithm.HS256, SECRET)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
 
-    public String getEmailFromToken(String token) {
+    // ✅ REQUIRED BY FILTER
+    public Claims getClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(SECRET)
+                .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
+    }
+
+    public String getEmailFromToken(String token) {
+        return getClaims(token).getSubject();
     }
 }
