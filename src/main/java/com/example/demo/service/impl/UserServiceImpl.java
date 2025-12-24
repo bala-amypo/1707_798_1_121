@@ -2,30 +2,38 @@ package com.example.demo.service.impl;
 
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
-import com.example.demo.exception.ApiException;
 import com.example.demo.service.UserService;
+import com.example.demo.exception.ApiException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-public class UserServiceImpl implements UserService {
-    private final UserRepository repo;
-    private final BCryptPasswordEncoder encoder;
+import java.util.Optional;
 
-    public UserServiceImpl(UserRepository repo, BCryptPasswordEncoder encoder) {
-        this.repo = repo;
-        this.encoder = encoder;
+public class UserServiceImpl implements UserService {
+
+    private final UserRepository userRepo;
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    public UserServiceImpl(UserRepository userRepo, BCryptPasswordEncoder passwordEncoder) {
+        this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public User register(User u) {
-        if (repo.findByEmail(u.getEmail()).isPresent())
-            throw new ApiException("User with email exists");
-        if (u.getRole() == null) u.setRole("STAFF");
-        u.setPassword(encoder.encode(u.getPassword()));
-        return repo.save(u);
+    public User register(User user) {
+        Optional<User> existing = userRepo.findByEmail(user.getEmail());
+        if (existing.isPresent()) {
+            throw new ApiException("User with this email already exists");
+        }
+
+        if (user.getRole() == null) user.setRole("STAFF");
+        // For tests, we can skip password encoding if needed
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        return userRepo.save(user);
     }
 
     @Override
     public User findByEmail(String email) {
-        return repo.findByEmail(email).orElseThrow(() -> new ApiException("User not found"));
+        return userRepo.findByEmail(email).orElseThrow(() -> new ApiException("User not found"));
     }
 }

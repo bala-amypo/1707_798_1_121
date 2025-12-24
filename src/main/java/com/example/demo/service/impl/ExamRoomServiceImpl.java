@@ -1,48 +1,38 @@
 package com.example.demo.service.impl;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-
-import com.example.demo.exception.ApiException;
 import com.example.demo.model.ExamRoom;
 import com.example.demo.repository.ExamRoomRepository;
 import com.example.demo.service.ExamRoomService;
+import com.example.demo.exception.ApiException;
 
-@Service
+import java.util.List;
+import java.util.Optional;
+
 public class ExamRoomServiceImpl implements ExamRoomService {
 
-    private final ExamRoomRepository examRoomRepository;
+    private final ExamRoomRepository roomRepo;
 
-    // ✅ Constructor injection only
-    public ExamRoomServiceImpl(ExamRoomRepository examRoomRepository) {
-        this.examRoomRepository = examRoomRepository;
+    public ExamRoomServiceImpl(ExamRoomRepository roomRepo) {
+        this.roomRepo = roomRepo;
     }
 
     @Override
     public ExamRoom addRoom(ExamRoom room) {
-
-        if (room.getRows() == null || room.getColumns() == null
-                || room.getRows() <= 0 || room.getColumns() <= 0) {
-            throw new ApiException("Invalid rows or columns");
+        if (room.getRows() <= 0 || room.getColumns() <= 0) {
+            throw new ApiException("Rows and Columns must be positive");
         }
 
-        Optional<ExamRoom> existing =
-                examRoomRepository.findByRoomNumber(room.getRoomNumber());
-
+        Optional<ExamRoom> existing = roomRepo.findByRoomNumber(room.getRoomNumber());
         if (existing.isPresent()) {
             throw new ApiException("Room already exists");
         }
 
-        // ✅ Capacity enforcement
-        room.setCapacity(room.getRows() * room.getColumns());
-
-        return examRoomRepository.save(room);
+        room.ensureCapacityMatches(); // method sets capacity = rows * columns
+        return roomRepo.save(room);
     }
 
     @Override
     public List<ExamRoom> getAllRooms() {
-        return examRoomRepository.findAll();
+        return roomRepo.findAll();
     }
 }
