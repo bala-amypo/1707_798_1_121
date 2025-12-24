@@ -2,25 +2,28 @@ package com.example.demo.controller;
 
 import com.example.demo.model.ExamSession;
 import com.example.demo.service.ExamSessionService;
+import com.example.demo.exception.ApiException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/sessions")
 public class ExamSessionController {
 
-    private final ExamSessionService service;
+    private final ExamSessionService sessionService;
 
-    public ExamSessionController(ExamSessionService service) {
-        this.service = service;
+    public ExamSessionController(ExamSessionService sessionService) {
+        this.sessionService = sessionService;
     }
 
     @PostMapping
-    public ExamSession create(@RequestBody ExamSession s) {
-        return service.createSession(s);
+    public ResponseEntity<ExamSession> create(@RequestBody ExamSession session) {
+        return ResponseEntity.ok(sessionService.createSession(session));
     }
 
     @GetMapping("/{id}")
-    public ExamSession get(@PathVariable Long id) {
-        return service.getSession(id);
+    public ResponseEntity<ExamSession> get(@PathVariable Long id) {
+        return ResponseEntity.ok(sessionService.getSession(id));
     }
 }

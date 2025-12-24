@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.ExamRoom;
 import com.example.demo.service.ExamRoomService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -9,19 +10,19 @@ import java.util.List;
 @RequestMapping("/rooms")
 public class ExamRoomController {
 
-    private final ExamRoomService service;
+    private final ExamRoomService roomService;
 
-    public ExamRoomController(ExamRoomService service) {
-        this.service = service;
+    public ExamRoomController(ExamRoomService roomService) {
+        this.roomService = roomService;
     }
 
     @PostMapping
-    public ExamRoom add(@RequestBody ExamRoom r) {
-        return service.addRoom(r);
+    public ResponseEntity<ExamRoom> add(@RequestBody ExamRoom room) {
+        return ResponseEntity.ok(roomService.addRoom(room));
     }
 
     @GetMapping
-    public List<ExamRoom> list() {
-        return service.getAllRooms();
+    public ResponseEntity<List<ExamRoom>> list() {
+        return ResponseEntity.ok(roomService.getAllRooms());
     }
 }
