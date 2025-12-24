@@ -1,3 +1,4 @@
+// ExamSessionRepository.java
 package com.example.demo.repository;
 
 import com.example.demo.model.ExamSession;
@@ -6,5 +7,5 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ExamSessionRepository extends JpaRepository<ExamSession, Long> {
-    List<ExamSession> findByExamDate(LocalDate date);
+    List<ExamSession> findByExamDate(LocalDate examDate);
 }

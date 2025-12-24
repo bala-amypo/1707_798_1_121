@@ -1,3 +1,4 @@
+// ExamRoomRepository.java
 package com.example.demo.repository;
 
 import com.example.demo.model.ExamRoom;
@@ -7,5 +8,5 @@ import java.util.Optional;
 
 public interface ExamRoomRepository extends JpaRepository<ExamRoom, Long> {
     Optional<ExamRoom> findByRoomNumber(String roomNumber);
-    List<ExamRoom> findByCapacityGreaterThanEqual(Integer capacity);
+    List<ExamRoom> findByCapacityGreaterThanEqual(int capacity);
 }
