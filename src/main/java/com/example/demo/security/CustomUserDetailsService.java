@@ -1,28 +1,31 @@
-// package com.example.demo.security;
+package com.example.demo.security;
 
-// import com.example.demo.model.User;
-// import com.example.demo.repository.UserRepository;
-// import org.springframework.security.core.userdetails.*;
-// import org.springframework.stereotype.Service;
+import com.example.demo.model.User;
+import com.example.demo.service.UserService;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
-// @Service
-// public class CustomUserDetailsService implements UserDetailsService {
+import java.util.Collections;
 
-//     private final UserRepository repo;
-
-//     public CustomUserDetailsService(UserRepository repo) {
-//         this.repo = repo;
-//     }
-
-//     @Override
-//     public UserDetails loadUserByUsername(String email) {
-//         User user = repo.findByEmail(email)
-//                 .orElseThrow(() -> new UsernameNotFoundException("not found"));
-
-//         return org.springframework.security.core.userdetails.User
-//                 .withUsername(user.getEmail())
-//                 .password(user.getPassword())
-//                 .roles(user.getRole())
-//                 .build();
-//     }
-// }
+@Service
+public class CustomUserDetailsService implements UserDetailsService {
+    
+    private final UserService userService;
+    
+    public CustomUserDetailsService(UserService userService) {
+        this.userService = userService;
+    }
+    
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userService.findByEmail(email);
+        return new org.springframework.security.core.userdetails.User(
+            user.getEmail(),
+            user.getPassword(),
+            Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
+        );
+    }
+}

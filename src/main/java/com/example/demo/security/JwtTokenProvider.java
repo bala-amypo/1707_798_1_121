@@ -13,10 +13,15 @@ public class JwtTokenProvider {
     private final SecretKey secretKey;
     private final long validityInMilliseconds;
     
+    // Constructor that matches the test (String, int)
+    public JwtTokenProvider(String secret, int validityInMilliseconds) {
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+        this.validityInMilliseconds = validityInMilliseconds;
+    }
+    
+    // No-arg constructor for Spring
     public JwtTokenProvider() {
-        // Default values for testing
-        this.secretKey = Keys.hmacShaKeyFor("test_secret_key_must_be_long_enough_for_hmac_sha_256".getBytes());
-        this.validityInMilliseconds = 3600000;
+        this("test_secret_key_must_be_long_enough_for_hmac_sha_256", 3600000);
     }
 
     public String generateToken(Long userId, String email, String role) {
