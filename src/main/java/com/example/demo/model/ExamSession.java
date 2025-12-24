@@ -1,49 +1,53 @@
 package com.example.demo.model;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "exam_sessions")
 public class ExamSession {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String examName;
-    private String date;
-    private String session;
+    private String subject;
+    private LocalDate examDate;
 
-    public ExamSession() {}
+    @ManyToMany
+    private List<Student> students;
 
     public Long getId() {
         return id;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public LocalDate getExamDate() {
+        return examDate;
+    }
+
+    public List<Student> getStudents() {
+        return students;
     }
 
     public void setId(Long id) {
         this.id = id;
     }
 
-    public String getExamName() {
-        return examName;
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
-    public void setExamName(String examName) {
-        this.examName = examName;
+    public void setExamDate(LocalDate examDate) {
+        this.examDate = examDate;
     }
 
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public String getSession() {
-        return session;
-    }
-
-    public void setSession(String session) {
-        this.session = session;
+    public void setStudents(List<Student> students) {
+        this.students = students;
     }
 }

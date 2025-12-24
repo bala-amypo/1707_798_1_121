@@ -1,14 +1,11 @@
 package com.example.demo.controller;
 
-import java.util.List;
-
-import org.springframework.web.bind.annotation.*;
-
 import com.example.demo.model.ExamSession;
 import com.example.demo.service.ExamSessionService;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/exam-sessions")
+@RequestMapping("/sessions")
 public class ExamSessionController {
 
     private final ExamSessionService service;
@@ -18,17 +15,12 @@ public class ExamSessionController {
     }
 
     @PostMapping
-    public ExamSession create(@RequestBody ExamSession examSession) {
-        return service.save(examSession);
+    public ExamSession create(@RequestBody ExamSession s) {
+        return service.createSession(s);
     }
 
     @GetMapping("/{id}")
-    public ExamSession getById(@PathVariable Long id) {
-        return service.get(id);
-    }
-
-    @GetMapping
-    public List<ExamSession> getAll() {
-        return service.getAll();
+    public ExamSession get(@PathVariable Long id) {
+        return service.getSession(id);
     }
 }
