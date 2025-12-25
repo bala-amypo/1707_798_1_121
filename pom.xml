@@ -20,7 +20,7 @@
     <packaging>jar</packaging>
 
     <name>Exam Seating Arrangement Generator</name>
-    <description>Spring Boot + TestNG</description>
+    <description>Spring Boot + TestNG (Auto-discovery)</description>
 
     <properties>
         <java.version>17</java.version>
@@ -71,7 +71,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Swagger -->
+        <!-- Swagger / OpenAPI -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -93,8 +93,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- ❌ JUNIT REMOVED -->
-        <!-- ✅ TESTNG ONLY -->
+        <!-- ✅ TestNG (NO testng.xml) -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -139,17 +138,13 @@
                 </configuration>
             </plugin>
 
-            <!-- ✅ FORCE TESTNG (NO JUNIT FALLBACK) -->
+            <!-- ✅ Surefire: Auto-discover TestNG tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
                     <useModulePath>false</useModulePath>
-                    <suiteXmlFiles>
-                        <suiteXmlFile>${project.basedir}/testng.xml</suiteXmlFile>
-                    </suiteXmlFiles>
-                    <testNGArtifactName>org.testng:testng</testNGArtifactName>
                 </configuration>
             </plugin>
 
