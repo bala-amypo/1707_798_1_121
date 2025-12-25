@@ -29,4 +29,11 @@ public class ExamRoom {
     private int columns;
 
     private int capacity;
+
+    public void ensureCapacityMatches() {
+        if (rows <= 0 || columns <= 0) {
+            throw new IllegalArgumentException("Rows and columns must be positive");
+        }
+        this.capacity = rows * columns;
+    }
 }
