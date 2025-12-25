@@ -4,25 +4,29 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "exam_rooms")
-@Getter @Setter @Builder
-@NoArgsConstructor @AllArgsConstructor
+@Table(
+    name = "exam_rooms",
+    uniqueConstraints = @UniqueConstraint(columnNames = "room_number")
+)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ExamRoom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(name = "room_number", nullable = false, unique = true)
     private String roomNumber;
 
-    private Integer capacity;
-    private Integer rows;
-    private Integer columns;
+    @Column(name = "room_rows")
+    private int rows;
 
-    public void ensureCapacityMatches() {
-        if (rows != null && columns != null) {
-            capacity = rows * columns;
-        }
-    }
+    @Column(name = "room_columns")
+    private int columns;
+
+    private int capacity;
 }
