@@ -1,31 +1,29 @@
-// ExamRoomController.java
 package com.example.demo.controller;
 
 import com.example.demo.model.ExamRoom;
 import com.example.demo.service.ExamRoomService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/rooms")
-@RequiredArgsConstructor
+@RequestMapping("/rooms")
 public class ExamRoomController {
-    private final ExamRoomService roomService;
+
+    private final ExamRoomService service;
+
+    public ExamRoomController(ExamRoomService service) {
+        this.service = service;
+    }
 
     @PostMapping
     public ResponseEntity<ExamRoom> add(@RequestBody ExamRoom room) {
-        return ResponseEntity.ok(roomService.addRoom(room));
+        return ResponseEntity.ok(service.addRoom(room));
     }
 
     @GetMapping
     public ResponseEntity<List<ExamRoom>> list() {
-        return ResponseEntity.ok(roomService.getAllRooms());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ExamRoom> get(@PathVariable Long id) {
-        return ResponseEntity.ok(roomService.getRoom(id));
+        return ResponseEntity.ok(service.getAllRooms());
     }
 }
