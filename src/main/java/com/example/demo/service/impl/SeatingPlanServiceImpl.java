@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.*;
 
+@Service
 public class SeatingPlanServiceImpl implements SeatingPlanService {
 
     private final ExamSessionRepository sessionRepo;

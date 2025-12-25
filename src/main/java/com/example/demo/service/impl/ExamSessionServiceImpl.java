@@ -8,6 +8,7 @@ import com.example.demo.service.ExamSessionService;
 
 import java.time.LocalDate;
 
+@Service
 public class ExamSessionServiceImpl implements ExamSessionService {
 
     private final ExamSessionRepository repo;
