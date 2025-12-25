@@ -20,7 +20,7 @@
     <packaging>jar</packaging>
 
     <name>Exam Seating Arrangement Generator</name>
-    <description>Spring Boot Project</description>
+    <description>Spring Boot + TestNG Project</description>
 
     <properties>
         <java.version>17</java.version>
@@ -28,25 +28,22 @@
 
     <dependencies>
 
-        <!-- Spring Core -->
+        <!-- Spring -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
-        <!-- Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- JPA -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- Security -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -93,14 +90,14 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Spring Boot Test -->
+        <!-- Spring Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
 
-        <!-- TestNG (MANDATORY) -->
+        <!-- ✅ TestNG (MANDATORY) -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -145,18 +142,16 @@
                 </configuration>
             </plugin>
 
-            <!-- FORCE TESTNG -->
+            <!-- ✅ FORCE TESTNG -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
                     <useModulePath>false</useModulePath>
-                    <providers>
-                        <provider>
-                            <name>testng</name>
-                        </provider>
-                    </providers>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
                 </configuration>
             </plugin>
 
