@@ -6,8 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -28,7 +26,11 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers(
+                        "/auth/**",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**"
+                ).permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -37,16 +39,11 @@ public class SecurityConfig {
     }
 
     /**
-     *  CRITICAL FIX FOR test01
-     * This avoids AuthenticationConfiguration dependency at startup
+     * Critical for test01
+     * No AuthenticationConfiguration dependency
      */
     @Bean
     public AuthenticationManager authenticationManager() {
         return new ProviderManager(List.of());
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }
