@@ -20,7 +20,7 @@
     <packaging>jar</packaging>
 
     <name>Exam Seating Arrangement Generator</name>
-    <description>Spring Boot + TestNG Project</description>
+    <description>Spring Boot + TestNG</description>
 
     <properties>
         <java.version>17</java.version>
@@ -28,22 +28,25 @@
 
     <dependencies>
 
-        <!-- Spring -->
+        <!-- Spring Core -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
+        <!-- Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- JPA -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
+        <!-- Security -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -90,14 +93,8 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Spring Test -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- ✅ TestNG (MANDATORY) -->
+        <!-- ❌ JUNIT REMOVED -->
+        <!-- ✅ TESTNG ONLY -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -142,7 +139,7 @@
                 </configuration>
             </plugin>
 
-            <!-- ✅ FORCE TESTNG -->
+            <!-- ✅ FORCE TESTNG (NO JUNIT FALLBACK) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -150,8 +147,9 @@
                 <configuration>
                     <useModulePath>false</useModulePath>
                     <suiteXmlFiles>
-                        <suiteXmlFile>testng.xml</suiteXmlFile>
+                        <suiteXmlFile>${project.basedir}/testng.xml</suiteXmlFile>
                     </suiteXmlFiles>
+                    <testNGArtifactName>org.testng:testng</testNGArtifactName>
                 </configuration>
             </plugin>
 
