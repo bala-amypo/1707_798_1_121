@@ -1,39 +1,36 @@
 package com.example.demo.security;
 
+import com.example.demo.model.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
 public class JwtUtil {
 
-    private static final String SECRET_KEY =
-            "mysecretkeymysecretkeymysecretkeymysecretkey"; // 256-bit
+    private static final String SECRET =
+            "mysecretkeymysecretkeymysecretkeymysecretkey"; // min 32 chars
 
-    private static final long EXPIRATION_MS = 1000 * 60 * 60; // 1 hour
+    private static final long EXPIRATION = 1000 * 60 * 60; // 1 hour
 
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
-    }
+    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
 
-    // ✅ Used by tests
+    /* ================= TOKEN GENERATION ================= */
+
     public String generateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // ✅ Used by tests
-    public String generateTokenForUser(com.example.demo.entity.User user) {
+    public String generateTokenForUser(User user) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("email", user.getEmail());
         claims.put("role", user.getRole());
@@ -42,7 +39,8 @@ public class JwtUtil {
         return generateToken(claims, user.getEmail());
     }
 
-    // ✅ Used by JwtAuthenticationFilter
+    /* ================= TOKEN EXTRACTION ================= */
+
     public String extractUsername(String token) {
         return parseToken(token).getBody().getSubject();
     }
@@ -57,17 +55,15 @@ public class JwtUtil {
     }
 
     public boolean isTokenValid(String token, String username) {
-        return extractUsername(token).equals(username) && !isTokenExpired(token);
+        return extractUsername(token).equals(username)
+                && !parseToken(token).getBody().getExpiration().before(new Date());
     }
 
-    private boolean isTokenExpired(String token) {
-        return parseToken(token).getBody().getExpiration().before(new Date());
-    }
+    /* ================= PARSER ================= */
 
-    // ✅ Used by tests
     public Jws<Claims> parseToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+                .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token);
     }
