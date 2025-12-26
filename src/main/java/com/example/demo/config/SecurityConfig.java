@@ -18,51 +18,31 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    // ✅ REQUIRED for AuthController
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
 
-    // ✅ Password encoder
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // ✅ Security rules
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-
-                // ✅ Swagger must be PUBLIC
                 .requestMatchers(
-                        "/swagger-ui.html",
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
-                        "/v3/api-docs.yaml"
+                        "/swagger-ui.html"
                 ).permitAll()
-
-                // ✅ Auth APIs public
-                .requestMatchers("/auth/**").permitAll()
-
-                // 🔒 Everything else secured
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             )
-
-            // ❌ No session
-            .sessionManagement(session ->
-                    session.sessionCreationPolicy(
-                            org.springframework.security.config.http.SessionCreationPolicy.STATELESS
-                    )
-            );
-
-        // ✅ JWT filter
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
