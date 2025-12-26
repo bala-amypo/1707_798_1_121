@@ -23,9 +23,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.jwtUtil = jwtUtil;
     }
 
+    // 🔥 THIS IS WHAT FIXES SWAGGER 403
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getServletPath();
+        String path = request.getRequestURI();
         return path.startsWith("/swagger-ui")
                 || path.startsWith("/v3/api-docs")
                 || path.startsWith("/auth");
@@ -43,10 +44,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
 
             String token = authHeader.substring(7);
-            String email = jwtUtil.extractEmail(token); // ✅ FIX HERE
 
-            if (email != null && jwtUtil.isTokenValid(token, email)) {
+            if (jwtUtil.isTokenValid(token)) {
 
+                String email = jwtUtil.extractEmail(token);
                 String role = jwtUtil.extractRole(token);
 
                 UsernamePasswordAuthenticationToken authentication =
@@ -60,7 +61,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authentication);
             }
         }
 
