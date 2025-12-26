@@ -3,22 +3,22 @@ package com.example.demo.security;
 import com.example.demo.model.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Component   // ✅ THIS LINE FIXES YOUR ERROR
 public class JwtUtil {
 
     private static final String SECRET =
-            "mysecretkeymysecretkeymysecretkeymysecretkey"; // min 32 chars
+            "mysecretkeymysecretkeymysecretkeymysecretkey";
 
-    private static final long EXPIRATION = 1000 * 60 * 60; // 1 hour
+    private static final long EXPIRATION = 1000 * 60 * 60;
 
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
-
-    /* ================= TOKEN GENERATION ================= */
 
     public String generateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
@@ -35,11 +35,8 @@ public class JwtUtil {
         claims.put("email", user.getEmail());
         claims.put("role", user.getRole());
         claims.put("userId", user.getId());
-
         return generateToken(claims, user.getEmail());
     }
-
-    /* ================= TOKEN EXTRACTION ================= */
 
     public String extractUsername(String token) {
         return parseToken(token).getBody().getSubject();
@@ -58,8 +55,6 @@ public class JwtUtil {
         return extractUsername(token).equals(username)
                 && !parseToken(token).getBody().getExpiration().before(new Date());
     }
-
-    /* ================= PARSER ================= */
 
     public Jws<Claims> parseToken(String token) {
         return Jwts.parserBuilder()
