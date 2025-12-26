@@ -11,33 +11,27 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
+            // ❌ Disable CSRF
             .csrf(csrf -> csrf.disable())
+
+            // ✅ Allow EVERYTHING (Swagger + APIs)
             .authorizeHttpRequests(auth -> auth
-
-                // ✅ ROOT (portal requirement)
-                .requestMatchers("/").permitAll()
-
-                // ✅ Swagger
-                .requestMatchers(
-                        "/swagger-ui.html",
-                        "/swagger-ui/**",
-                        "/v3/api-docs/**",
-                        "/webjars/**"
-                ).permitAll()
-
-                // 🔓 EXAM SAFE: allow everything
                 .anyRequest().permitAll()
             )
+
+            // ❌ Disable default login
             .formLogin(form -> form.disable())
+
+            // ❌ Disable basic auth
             .httpBasic(basic -> basic.disable());
 
         return http.build();
     }
 
-    // ✅ REQUIRED FOR UserServiceImpl
+    // ✅ REQUIRED for UserServiceImpl
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
