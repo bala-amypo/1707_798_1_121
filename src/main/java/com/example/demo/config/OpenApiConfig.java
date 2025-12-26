@@ -1,23 +1,17 @@
 package com.example.demo.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
+import org.springframewQork.context.annotation.Configuration;
 import java.util.List;
 
 @Configuration
 public class OpenApiConfig {
 
     @Bean
-    public OpenAPI customOpenAPI() {
+    public OpenAPI openAPI() {
         return new OpenAPI()
-                .info(new Info()
-                        .title("Exam Seating Management API")
-                        .description("API documentation for Exam Seating & Student Management System")
-                        .version("1.0.0"))
                 .servers(List.of(
                         new Server().url("https://9232.pro604cr.amypo.ai/")
                 ));
