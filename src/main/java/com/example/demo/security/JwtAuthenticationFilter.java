@@ -23,6 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.jwtUtil = jwtUtil;
     }
 
+    // ✅ Skip Swagger & auth endpoints
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
@@ -45,9 +46,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             String token = authHeader.substring(7);
 
-            if (jwtUtil.isTokenValid(token)) {
+            // ✅ extract username FIRST
+            String email = jwtUtil.extractUsername(token);
 
-                String email = jwtUtil.extractUsername(token);
+            // ✅ correct method usage
+            if (email != null && jwtUtil.isTokenValid(token, email)) {
+
                 String role = jwtUtil.extractRole(token);
 
                 UsernamePasswordAuthenticationToken authentication =
