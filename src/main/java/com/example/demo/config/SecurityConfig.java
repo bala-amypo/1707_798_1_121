@@ -6,9 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -37,23 +36,33 @@ public class SecurityConfig {
 
         http
             .csrf(csrf -> csrf.disable())
-            .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
             .authorizeHttpRequests(auth -> auth
+
+                // ✅ ALLOW SWAGGER COMPLETELY
                 .requestMatchers(
-                        "/auth/**",
-                        "/swagger-ui/**",
                         "/swagger-ui.html",
+                        "/swagger-ui/**",
                         "/v3/api-docs/**",
-                        "/v3/api-docs",
-                        "/webjars/**"
+                        "/v3/api-docs.yaml"
                 ).permitAll()
+
+                // ✅ ALLOW AUTH APIs
+                .requestMatchers("/auth/**").permitAll()
+
+                // 🔒 Everything else secured
                 .anyRequest().authenticated()
             )
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+            // ❌ Disable session
+            .sessionManagement(session ->
+                    session.sessionCreationPolicy(
+                            org.springframework.security.config.http.SessionCreationPolicy.STATELESS
+                    )
+            );
+
+        // ✅ JWT FILTER
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 }
-        
