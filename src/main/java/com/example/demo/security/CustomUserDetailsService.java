@@ -1,37 +1,3 @@
-// package com.example.demo.security;
-
-// import com.example.demo.model.User;
-// import com.example.demo.repository.UserRepository;
-// import org.springframework.security.core.userdetails.UserDetails;
-// import org.springframework.security.core.userdetails.UserDetailsService;
-// import org.springframework.security.core.userdetails.UsernameNotFoundException;
-// import org.springframework.stereotype.Service;
-
-// @Service //  THIS IS THE FIX
-// public class CustomUserDetailsService implements UserDetailsService {
-
-//     private final UserRepository userRepository;
-
-//     public CustomUserDetailsService(UserRepository userRepository) {
-//         this.userRepository = userRepository;
-//     }
-
-//     @Override
-//     public UserDetails loadUserByUsername(String email)
-//             throws UsernameNotFoundException {
-
-//         User user = userRepository.findByEmail(email)
-//                 .orElseThrow(() ->
-//                         new UsernameNotFoundException("User not found"));
-
-//         return org.springframework.security.core.userdetails.User
-//                 .withUsername(user.getEmail())
-//                 .password(user.getPassword())
-//                 .roles(user.getRole())
-//                 .build();
-//     }
-// }
-
 package com.example.demo.security;
 
 import com.example.demo.model.User;
@@ -41,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service //  THIS IS THE FIX
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
@@ -61,7 +27,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
                 .password(user.getPassword())
-                .roles(user.getRole())   // store ADMIN / USER only
+                .roles(user.getRole())
                 .build();
     }
 }
