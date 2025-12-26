@@ -23,9 +23,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.jwtUtil = jwtUtil;
     }
 
-    /**
-     * ✅ DO NOT APPLY JWT FILTER FOR SWAGGER & AUTH ENDPOINTS
-     */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
@@ -43,36 +40,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
-        // ✅ Expecting: Authorization: Bearer <token>
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
 
             String token = authHeader.substring(7);
+            String email = jwtUtil.extractEmail(token); // ✅ FIX HERE
 
-            try {
-                String username = jwtUtil.extractUsername(token);
+            if (email != null && jwtUtil.isTokenValid(token, email)) {
 
-                if (username != null &&
-                        SecurityContextHolder.getContext().getAuthentication() == null &&
-                        jwtUtil.isTokenValid(token, username)) {
+                String role = jwtUtil.extractRole(token);
 
-                    String role = jwtUtil.extractRole(token);
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                email,
+                                null,
+                                List.of(new SimpleGrantedAuthority("ROLE_" + role))
+                        );
 
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(
-                                    username,
-                                    null,
-                                    List.of(new SimpleGrantedAuthority("ROLE_" + role))
-                            );
+                authentication.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request)
+                );
 
-                    authentication.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
-                    );
-
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
-            } catch (Exception ex) {
-                // ❌ Invalid token → do nothing, request continues unauthenticated
-                SecurityContextHolder.clearContext();
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
 
