@@ -47,9 +47,7 @@ public class ExamRoom {
     @Column(nullable = false)
     private Integer capacity;
 
-    /* =========================
-       Business Logic
-       ========================= */
+    
 
     public void ensureCapacityMatches() {
         if (rows != null && columns != null) {
@@ -57,10 +55,7 @@ public class ExamRoom {
         }
     }
 
-    /* =========================
-       JPA Lifecycle Hook
-       ========================= */
-
+    
     @PrePersist
     @PreUpdate
     public void syncCapacity() {
