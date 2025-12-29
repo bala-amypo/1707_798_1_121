@@ -9,7 +9,7 @@ public class JwtConfig {
 
     @Bean
     public JwtTokenProvider jwtTokenProvider() {
-        
+        // same secret style used in tests (long enough for HMAC)
         return new JwtTokenProvider(
                 "this_is_a_test_secret_key_must_be_long_enough_for_hmac_sha_which_is_long",
                 3600000
